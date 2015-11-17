@@ -1,18 +1,18 @@
 
 ## Gem injector Tutorial
 
-* [Intro and Module concept](#intro-and-module-concept)
+* [Intro and Module concept](#intro-and-module-concept-up)
 * [Common usage](#common-usage)
-  * [Simple modular app](#simple-modular-app)
-  * [Dependency graph and constructor injection](#dependency-graph-and-constructor-injection)
-  * [Module and Container usage](#module-and-container-usage)
-* [Module Builder usage](#modulebuilder-usage)
-  * [ModuleBuilder interface](#modulebuilder-interface)
-  * [Module Builder restrictions](#module-builder-restrictions)
+  * [Simple modular app](#simple-modular-app-up)
+  * [Dependency graph and constructor injection](#dependency-graph-and-constructor-injection-up)
+  * [Module and Container usage](#module-and-container-usage-up)
+* [Module Builders](#module-builders-up)
+  * [ModuleBuilder interface](#modulebuilder-interface-up)
+  * [Module Builder restrictions](#module-builder-restrictions-up)
 * [Common code requirements](#common-code-requirements-up)
 * [Other](#other)
-  * [Module Types](#module-types)
-  * [Cyclic dependencies](#cyclic-dependencies)
+  * [Module Types](#module-types-up)
+  * [Cyclic dependencies](#cyclic-dependencies-up)
 * [Back to README](./../README.md)
 
 #### Intro and Module concept [up](#gem-injector-tutorial)
