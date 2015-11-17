@@ -6,7 +6,7 @@ It is built using only Java Reflection API without any third-party libraries. Ex
 
 It doesn’t have complicated and elaborated architecture, hundreds of features and so on, it is intended to be used in simple home or “pet” projects that do not require excessive complexity.
 
-![Gem injector Tutorial](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial.md)
+[Gem injector Tutorial](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial.md)
 
 I will be happy if you will find this container useful for your apps.
 Feel free to contribute or to contact me if you have found a typo or mistake or something else. 
