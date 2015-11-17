@@ -1,5 +1,5 @@
-
-# Gem Injector
+![gem_injector_logo](http://i.imgur.com/GKg9XVG.png) 
+# Gem Injector 
 
 
 It is very simple, basical, lightweight and fast Java [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection) container based on the idea of code modularity, interfaces usage and constructor injection.
