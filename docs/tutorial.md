@@ -1,11 +1,11 @@
 
 ## Gem injector Tutorial
 
-[Common usage](# Common usage)
+[Common usage](#common-usage)
 
-[Module Builders](# ModuleBuilder usage)
+[Module Builders](#modulebuilder-usage)
 
-[Common code requirements](# Common requirements)
+[Common code requirements](#common-requirements)
 
 Gem injector is based on “modules” idea and assume that all your program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
 
