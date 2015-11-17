@@ -1,9 +1,12 @@
 
 ## Gem injector Tutorial
 
+* [Intro and Module concept](#intro-and-module-concept)
 * [Common usage](#common-usage)
 * [Module Builders](#modulebuilder-usage)
 * [Common code requirements](#common-requirements)
+
+#### Intro and Module concept
 
 Gem injector is based on “modules” idea and assume that all your program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
 
@@ -12,6 +15,7 @@ Let’s assume that some important functional part in your program is hidden in 
 It is clear, that other program’s parts that require some or all of functions that this module can grant depends on this single module. So, we can say that other classes can have this module as their dependency.
 
 #### Commnon usage
+
 So, how can you use this DI container? Here is a simple example how one can use Gem injector. Let’s start!
 
 To illustrate container work let’s create a skeleton of a simple program that doesn’t rely on DI container yet. Assume that our program has only three modules and they are called **FirstModule**, **SecondModule** and **ThirdModule** to avoid complex names.
