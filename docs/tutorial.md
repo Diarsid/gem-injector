@@ -9,7 +9,7 @@
 * [Module Builder usage](#modulebuilder-usage)
   * [ModuleBuilder interface](#modulebuilder-interface)
   * [Module Builder restrictions](#module-builder-restrictions)
-* [Common code requirements](#common-code-requirements)
+* [Common code requirements](#common-code-requirements-up)
 * [Other](#other)
   * [Module Types](#module-types)
   * [Cyclic dependencies](#cyclic-dependencies)
