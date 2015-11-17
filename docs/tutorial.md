@@ -93,4 +93,4 @@ There are also several common requirements to use this container:
 *	.init() method must be called only once for one Container instance. Second and all subsequent invocations will throw an exception.
 *	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
 
-![Back to README](./../README.md)
+[Back to README](./../README.md)
