@@ -3,8 +3,15 @@
 
 * [Intro and Module concept](#intro-and-module-concept)
 * [Common usage](#common-usage)
-* [Module Builders](#modulebuilder-usage)
+  * [Simple modular app](#simple-modular-app)
+  * [Dependency graph and constructor injection](#dependency-graph-and-constructor-injection)
+  * [Module and Container usage](#module-and-container-usage)
+* [Module Builder usage](#modulebuilder-usage)
 * [Common code requirements](#common-requirements)
+* [Other](#other)
+  * [Module Types](#module-types)
+  * [Cyclic dependencies](#cyclic-dependencies)
+* [Back to README](./../README.md)
 
 #### Intro and Module concept
 
@@ -15,7 +22,7 @@ Let’s assume that some important functional part in your program is hidden in 
 It is clear, that other program’s parts that require some or all of functions that this module can grant depends on this single module. So, we can say that other classes can have this module as their dependency.
 
 #### Commnon usage
-
+##### Simple modular app
 So, how can you use this DI container? Here is a simple example how one can use Gem injector. Let’s start!
 
 To illustrate container work let’s create a skeleton of a simple program that doesn’t rely on DI container yet. Assume that our program has only three modules and they are called **FirstModule**, **SecondModule** and **ThirdModule** to avoid complex names.
@@ -30,6 +37,7 @@ Let’s implement those interfaces with concrete classes and call them as “wor
 
 ![third_module](http://i.imgur.com/Kee5PYI.png)
 
+##### Dependency graph and constructor injection
 It’s done. Of course, these modules cannot be completely independent because of if they actually is, they can be useless. Whole program is designed to solve some tasks and all its inner parts have to work in conjunction to achieve some common goals. Modules will have inner dependecies on themselves to use one another as a services. Let’s depict the scheme of their dependencies as a graph:
 
 ![dependencies_graph](http://i.imgur.com/6yrV9A2.png)
@@ -44,6 +52,7 @@ It’s clear from scheme above that **FirstModule** is independent and doesn’t
 
 From that point it is possible to begin the assembling of program and wiring modules together. Without DI container it is nessecary to write a lot of code with “new” operator, explicitly pass module instances into another constructors of approptiate worker classes and cast their instances to appropriate module intefaces. This approach leads to inconvenient cumbersome code which often requires a lot of static methods and breaking of package-private classes encapsulation.
 
+##### Module and Container usage
 To avoid that we will use DI container. To begin with it, it is required to edit our previous code to extend module interfaces from void **com.drs.gem.injector.core.Module** interface:
 
 ![interfaces_extend_module](http://i.imgur.com/Zn2gMe6.png)
@@ -55,12 +64,6 @@ Then just obtain instance of **com.drs.gem.injector.core.Container**, declare ap
 Returned module instance is fully initialized and has all required dependecies set. 
 
 When modules is declared and method .*init*() is invoked on **Container** instance, container collects all information about dependecies graph, initializes them all, injects all required dependencies where they are required and saves all singleton module instances. 
-
-While developing application situation can arise when some module will depend on other modules and so on, but one of that underlying modules will depend on that first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop thus in that case **CyclicDependencyException** will be thrown from .*init*() method.
-
-**ModuleType.SINGLETON** as argument in .*declareModule*() method means that whenever .*getModule*() is invoked it will return the same module object regardless of how many times this method has been invoked previously. Singletons will be initialized during .*init*() and will be saved inside of **Container** object.
-
-**ModuleType.PROTOTYPE** means that whenever .*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
 
 #### ModuleBuilder usage
 
@@ -94,7 +97,7 @@ There are only several restrictions about **ModuleBuilder**:
 *	**ModuleBuilder** implementation classes must be located in the same package as its corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
 
-#### Common requirements
+#### Common code requirements
 
 There are also several common requirements to use this container:
 *	**Module** implementation classes must have only one constructor with all explicitly declared dependencies. Although it can, of course, contain setter methods if you want to inject some dependencies later manually.
@@ -102,5 +105,15 @@ There are also several common requirements to use this container:
 *	There must be at least one declared module before .*init*() invocation otherwise exception will be thrown.
 *	.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
 *	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
+
+#### Other
+##### Module Types
+
+**ModuleType.SINGLETON** as argument in .*declareModule*() method means that whenever .*getModule*() is invoked it will return the same module object regardless of how many times this method has been invoked previously. Singletons will be initialized during .*init*() and will be saved inside of **Container** object.
+
+**ModuleType.PROTOTYPE** means that whenever .*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
+
+##### Cyclic dependencies
+While developing application situation can arise when some module will depend on other modules and so on, but one of that underlying modules will depend on that first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop thus in that case **CyclicDependencyException** will be thrown from .*init*() method.
 
 [Back to README](./../README.md)
