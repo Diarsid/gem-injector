@@ -21,7 +21,7 @@ Let’s assume that some important functional part in your program is hidden in 
 
 It is clear, that other program’s parts that require some or all of functions that this module can grant depends on this single module. So, we can say that other classes can have this module as their dependency.
 
-#### Commnon usage
+#### Common usage
 ##### Simple modular app
 So, how can you use this DI container? Here is a simple example how one can use Gem injector. Let’s start!
 
