@@ -1,3 +1,6 @@
+
+## Gem injector Tutorial
+
 Gem injector is based on “modules” idea and assume that all your program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
 
 Let’s assume that some important functional part in your program is hidden in some package by package-private access modifier and is exposed for use to outer packages with only one public interface that provides all public functions because of which this entire module has been designed. We can call this only interface as “module” and  package that contain all classes that provide and support this interface implementation (or even several packages of such classes) as “module implementation”.
@@ -88,4 +91,6 @@ There are also several common requirements to use this container:
 *	.init() method must be called only after all modules have been declared through Container.declareModule() method otherwise exception will be thrown.
 *	There must be at least one declared module before .init() invocation otherwise exception will be thrown.
 *	.init() method must be called only once for one Container instance. Second and all subsequent invocations will throw an exception.
-*	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown. 
+*	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
+
+![Back to README](/../README.md)
