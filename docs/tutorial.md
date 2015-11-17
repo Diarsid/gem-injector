@@ -8,7 +8,7 @@
 
 #### Intro and Module concept
 
-Gem injector is based on “modules” idea and assume that all your program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
+Gem injector is based on “modules” idea and assume that your whole program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
 
 Let’s assume that some important functional part in your program is hidden in some package by package-private access modifier and is exposed for use to outer packages with only one public interface that provides all public functions because of which this entire module has been designed. We can call this only interface as “module” and  package that contain all classes that provide and support this interface implementation (or even several packages of such classes) as “module implementation”.
 
