@@ -1,13 +1,17 @@
 
 ## Gem injector Tutorial
 
+[Common usage](#### Common usage)
+[Module Builders](#### ModuleBuilder usage)
+[Common code requirements](#### Common requirements)
+
 Gem injector is based on “modules” idea and assume that all your program can be devided into logic blocks of classes or packages that are hidden by encapsulation and can interact between packages through appropriate interfaces. 
 
 Let’s assume that some important functional part in your program is hidden in some package by package-private access modifier and is exposed for use to outer packages with only one public interface that provides all public functions because of which this entire module has been designed. We can call this only interface as “module” and  package that contain all classes that provide and support this interface implementation (or even several packages of such classes) as “module implementation”.
 
 It is clear, that other program’s parts that require some or all of functions that this module can grant depends on this single module. So, we can say that other classes can have this module as their dependency.
 
-#### Enough description! Show me some code!
+#### Commnon usage
 So, how can you use this DI container? Here is a simple example how one can use Gem injector. Let’s start!
 
 To illustrate container work let’s create a skeleton of a simple program that doesn’t rely on DI container yet. Assume that our program has only three modules and they are called **FirstModule**, **SecondModule** and **ThirdModule** to avoid complex names.
@@ -54,7 +58,7 @@ While developing application situation can arise when some module will depend on
 
 **ModuleType.PROTOTYPE** means that whenever .*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
 
-##### ModuleBuilder usage
+#### ModuleBuilder usage
 
 Assume that there are some complex module depends on several other modules. Let it be, for example, **FifthModule** depends on **SecondModule**, **ThirdModule** and **FourthModule** (assume there are more then three previous modules have been designed). But while developing its functionality it turns out that there isn’t real nessecity for **FifthModule** instance to use **ThirdModule** all the time. What is actually required is only some initial data that can be obtained from **ThirdModule** only once. After it **ThirdModule** instance actually becomes useless and redundant for **FifthModule**. But we still need its information i.e. depend on it. Moreover, let’s assume that it is nessecary to perform some additional preliminary actions to initialize **FifthModule**. Those operations can be incapsulated in package-private classes and methods in the same package in which **FifthModule** is located. 
 
@@ -85,6 +89,8 @@ And that’s all! **Container** will find all **ModuleBuilder** imlemenetations 
 There are only several restrictions about **ModuleBuilder**:
 *	**ModuleBuilder** implementation classes must be located in the same package as its corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
+
+#### Common requirements
 
 There are also several common requirements to use this container:
 *	**Module** implementation classes must have only one constructor with all explicitly declared dependencies. Although it can, of course, contain setter methods if you want to inject some dependencies later manually.
