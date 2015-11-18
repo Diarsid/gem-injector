@@ -90,7 +90,7 @@ This is the point where **ModuleBuilder** comes into play! To provide **FifthMod
 
 ![module_builder](http://i.imgur.com/T6yLv4b.png)
 
-As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. And we use all dependencies that we need to process preliminary actions as arguments in .*buildModule*() method. 
+As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as .*buildModule*() method arguments. 
 
 All we need now in order to use **FifthModule** (in conjunction with container) is to declare new modules as we have done it for previous modules earlier:
 
