@@ -16,4 +16,4 @@ I will be happy if you will find this container useful for your apps.
 
 Feel free to contribute or to contact me if you have found a typo or mistake or something else :) 
 
-[Back to README](https://github.com/Diarsid/gem-injector/blob/master/README.md)
+[:arrow_backward: Back to README](https://github.com/Diarsid/gem-injector/blob/master/README.md)
