@@ -109,8 +109,8 @@ There are only several restrictions about **ModuleBuilder**:
 There are also several common requirements to use this container:
 *	**Module** implementation classes must have only one constructor with all explicitly declared dependencies. Although it can, of course, contain setter methods if you want to inject some dependencies later manually.
 *	.*init*() method must be called only after all modules have been declared through **Container**.*declareModule*() method otherwise exception will be thrown.
-*	There must be at least one declared module before .*init*() invocation otherwise exception will be thrown.
-*	.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
+*	There must be at least one declared module before **Container**.*init*() invocation otherwise exception will be thrown.
+*	**Container**.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
 *	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
 
 ##### Constructor injection [:arrow_up_small:](#gem-injector-tutorial)
@@ -125,11 +125,11 @@ To provide consistent and precise module's behavior and avoid uncertainty or com
 
 ##### Module Types [:arrow_up_small:](#gem-injector-tutorial)
 
-**ModuleType.SINGLETON** as argument in .*declareModule*() method means that whenever .*getModule*() is invoked it will return the same module object regardless of how many times this method has been invoked previously. Singletons will be initialized during .*init*() and will be saved inside of **Container** object.
+**ModuleType.SINGLETON** as argument in **Container**.*declareModule*() method means that whenever **Container**.*getModule*() is invoked it will return the same module object regardless of how many times this method has been invoked previously. Singletons will be initialized during .*init*() and will be saved inside of **Container** object.
 
-**ModuleType.PROTOTYPE** means that whenever .*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
+**ModuleType.PROTOTYPE** means that whenever **Container**.*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
 
 ##### Cyclic dependencies [:arrow_up_small:](#gem-injector-tutorial)
-While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from .*init*() method.
+While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from **Container**.*init*() method.
 
 [:arrow_backward: Back to README](./../README.md)
