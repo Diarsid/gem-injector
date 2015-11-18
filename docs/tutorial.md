@@ -13,7 +13,8 @@
 * [Other](#other)
   * [Module Types](#module-types-arrow_up_small)
   * [Cyclic dependencies](#cyclic-dependencies-arrow_up_small)
-* [Back to README](./../README.md)
+
+[:arrow_backward: Back to README](./../README.md)
 
 #### Intro and Module concept [:arrow_up_small:](#gem-injector-tutorial)
 
@@ -120,4 +121,4 @@ There are also several common requirements to use this container:
 ##### Cyclic dependencies [:arrow_up_small:](#gem-injector-tutorial)
 While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from .*init*() method.
 
-[Back to README](./../README.md)
+[:arrow_backward: Back to README](./../README.md)
