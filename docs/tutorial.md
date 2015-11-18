@@ -118,6 +118,6 @@ There are also several common requirements to use this container:
 **ModuleType.PROTOTYPE** means that whenever .*getModule*() is invoked it will return new module object every time. If it has dependencies on other modules that has been also delcared as prototypes, those modules will also be a new objects every time. If it has dependecies on modules which are singletons, they always be the same object, as definition of singleton pattern implies.
 
 ##### Cyclic dependencies [:arrow_up_small:](#gem-injector-tutorial)
-While developing application situation can arise when some module will depend on other modules and so on, but one of that underlying modules will depend on that first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop thus in that case **CyclicDependencyException** will be thrown from .*init*() method.
+While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from .*init*() method.
 
 [Back to README](./../README.md)
