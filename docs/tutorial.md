@@ -100,7 +100,7 @@ And that’s all! **Container** will find all **ModuleBuilder** imlemenetations 
 
 ##### Module Builder restrictions [:arrow_up_small:](#gem-injector-tutorial)
 There are only several restrictions about **ModuleBuilder**:
-*	**ModuleBuilder** implementation classes must be located in the same package as its corresponding Module implementation classes;
+*	**ModuleBuilder** implementation classes must be located in the same packages as their corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
 
 #### Container details
