@@ -111,7 +111,7 @@ There are also several common requirements to use this container:
 *	.*init*() method must be called only after all modules have been declared through **Container**.*declareModule*() method otherwise exception will be thrown.
 *	There must be at least one declared module before **Container**.*init*() invocation otherwise exception will be thrown.
 *	**Container**.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
-*	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
+*	All modules that are used in constructor of any declared module must also be declared as modules otherwise exception will be thrown.
 
 ##### Constructor injection [:arrow_up_small:](#gem-injector-tutorial)
 
