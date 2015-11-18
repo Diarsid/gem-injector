@@ -11,6 +11,7 @@
   * [Module Builder restrictions](#module-builder-restrictions-arrow_up_small)
 * [Container details](#container-details)
   * [Common code requirements](#common-code-requirements-arrow_up_small)
+  * [Constructor injection](#constructor-injection-arrow_up_small)
   * [Module Types](#module-types-arrow_up_small)
   * [Cyclic dependencies](#cyclic-dependencies-arrow_up_small)
 
@@ -112,7 +113,7 @@ There are also several common requirements to use this container:
 *	.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
 *	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
 
-##### Constructor injection
+##### Constructor injection [:arrow_up_small:](#gem-injector-tutorial)
 
 Pivotal implementation idea of injection mechanism in this container is constructor injection. This dependency injection type has been choosed because of setter injection is usually regarded by many developers as anti-pattern as it allows incomplete objects initialization. Setter initialization does not provide the way developer could be confident that object has all its fields initialized properly.
 
