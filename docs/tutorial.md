@@ -9,8 +9,8 @@
 * [Module Builders](#module-builders-arrow_up_small)
   * [ModuleBuilder interface](#modulebuilder-interface-arrow_up_small)
   * [Module Builder restrictions](#module-builder-restrictions-arrow_up_small)
-* [Common code requirements](#common-code-requirements-arrow_up_small)
-* [Other](#other)
+* [Container details](#container-details)
+  * [Common code requirements](#common-code-requirements-arrow_up_small)
   * [Module Types](#module-types-arrow_up_small)
   * [Cyclic dependencies](#cyclic-dependencies-arrow_up_small)
 
@@ -102,7 +102,8 @@ There are only several restrictions about **ModuleBuilder**:
 *	**ModuleBuilder** implementation classes must be located in the same package as its corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
 
-#### Common code requirements [:arrow_up_small:](#gem-injector-tutorial)
+#### Container details
+##### Common code requirements [:arrow_up_small:](#gem-injector-tutorial)
 
 There are also several common requirements to use this container:
 *	**Module** implementation classes must have only one constructor with all explicitly declared dependencies. Although it can, of course, contain setter methods if you want to inject some dependencies later manually.
@@ -111,7 +112,16 @@ There are also several common requirements to use this container:
 *	.*init*() method must be called only once for one **Container** instance. Second and all subsequent invocations will throw an exception.
 *	All modules that are used in constructor of any declared module must also be declared otherwise exception will be thrown.
 
-#### Other
+##### Constructor injection
+
+Pivotal implementation idea of injection mechanism in this container is constructor injection. This dependency injection type has been choosed because of setter injection is usually regarded by many developers as anti-pattern as it allows incomplete objects initialization. Setter initialization does not provide the way developer could be confident that object has all its fields initialized properly.
+
+Therefore container cares about constructors of module classes and does not analyze their fields. Container collects all constructors from declared objects set and gets their constructor arguments. The object's constructor arguments list is further regarded as set of object's dependencies. Subsequent injection of all nessecary dependencies is also performed based on list of constructor arguments.
+
+Container does not collect or process object's fields or methods information nor perform direct field injection or setter injection.
+
+To provide consistent and precise module's behavior and avoid uncertainty or complex configurations it is allowed for module class to have only one explicit constructor with all nessecary dependencies declared as its arguments.
+
 ##### Module Types [:arrow_up_small:](#gem-injector-tutorial)
 
 **ModuleType.SINGLETON** as argument in .*declareModule*() method means that whenever .*getModule*() is invoked it will return the same module object regardless of how many times this method has been invoked previously. Singletons will be initialized during .*init*() and will be saved inside of **Container** object.
