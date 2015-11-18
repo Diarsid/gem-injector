@@ -101,7 +101,7 @@ There are only several restrictions about **ModuleBuilder**:
 *	**ModuleBuilder** implementation classes must be located in the same package as its corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
 
-#### Common code requirements [up](#gem-injector-tutorial)
+#### Common code requirements [:arrow_up_small:](#gem-injector-tutorial)
 
 There are also several common requirements to use this container:
 *	**Module** implementation classes must have only one constructor with all explicitly declared dependencies. Although it can, of course, contain setter methods if you want to inject some dependencies later manually.
