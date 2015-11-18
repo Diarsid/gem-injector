@@ -54,7 +54,7 @@ It’s clear from scheme above that **FirstModule** is independent and doesn’t
 
 ![third_class](http://i.imgur.com/I0gcTrz.png)
 
-From that point it is possible to begin the assembling of program and wiring modules together. Without DI container it is nessecary to write a lot of code with “new” operator, explicitly pass module instances into another constructors of approptiate worker classes and cast their instances to appropriate module intefaces. This approach leads to inconvenient cumbersome code which often requires a lot of static methods and breaking of package-private classes encapsulation.
+From that point it is possible to begin the assembling of program and wiring modules together. Without DI container it is necessary to write a lot of code with “new” operator, explicitly pass module instances into another constructors of approptiate worker classes and cast their instances to appropriate module intefaces. This approach leads to inconvenient cumbersome code which often requires a lot of static methods and breaking of package-private classes encapsulation.
 
 ##### Module and Container usage [:arrow_up_small:](#gem-injector-tutorial)
 To avoid that we will use DI container. To begin with it, it is required to edit our previous code to extend module interfaces from void **com.drs.gem.injector.module.Module** interface:
@@ -71,7 +71,7 @@ When modules is declared and method .*init*() is invoked on **Container** instan
 
 #### Module Builders [:arrow_up_small:](#gem-injector-tutorial)
 
-Assume that there are some complex module depends on several other modules. Let it be, for example, **FifthModule** depends on **SecondModule**, **ThirdModule** and **FourthModule** (assume there are more then three previous modules have been designed). But while developing its functionality it turns out that there isn’t real nessecity for **FifthModule** instance to use **ThirdModule** all the time. What is actually required is only some initial data that can be obtained from **ThirdModule** only once. After it **ThirdModule** instance actually becomes useless and redundant for **FifthModule**. But we still need its information i.e. depend on it. Moreover, let’s assume that it is nessecary to perform some additional preliminary actions to initialize **FifthModule**. Those operations can be incapsulated in package-private classes and methods in the same package in which **FifthModule** is located. 
+Assume that there are some complex module depends on several other modules. Let it be, for example, **FifthModule** depends on **SecondModule**, **ThirdModule** and **FourthModule** (assume there are more then three previous modules have been designed). But while developing its functionality it turns out that there isn’t real necessity for **FifthModule** instance to use **ThirdModule** all the time. What is actually required is only some initial data that can be obtained from **ThirdModule** only once. After it **ThirdModule** instance actually becomes useless and redundant for **FifthModule**. But we still need its information i.e. depend on it. Moreover, let’s assume that it is necessary to perform some additional preliminary actions to initialize **FifthModule**. Those operations can be incapsulated in package-private classes and methods in the same package in which **FifthModule** is located. 
 
 Let’s extend our previous dependensies graph with **FourthModule** and **FifthModule**. This will look something like this:
 
@@ -86,7 +86,7 @@ And implement it as we need:
 ![5th_class](http://i.imgur.com/KRj7I3m.png)
 
 ##### ModuleBuilder interface [:arrow_up_small:](#gem-injector-tutorial)
-This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all nessecary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class in the same package with **FifthModuleWorker** and **@Override** .*buildModule*() as described below:
+This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all necessary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class in the same package with **FifthModuleWorker** and **@Override** .*buildModule*() as described below:
 
 ![module_builder](http://i.imgur.com/T6yLv4b.png)
 
@@ -117,11 +117,11 @@ There are also several common requirements to use this container:
 
 Pivotal implementation idea of injection mechanism in this container is constructor injection. This dependency injection type has been choosed because of setter injection is usually regarded by many developers as anti-pattern as it allows incomplete objects initialization. Setter initialization does not provide the way developer could be confident that object has all its fields initialized properly.
 
-Therefore container cares about constructors of module classes and does not analyze their fields. Container collects all constructors from declared objects set and gets their constructor arguments. The object's constructor arguments list is further regarded as set of object's dependencies. Subsequent injection of all nessecary dependencies is also performed based on list of constructor arguments.
+Therefore container cares about constructors of module classes and does not analyze their fields. Container collects all constructors from declared objects set and gets their constructor arguments. The object's constructor arguments list is further regarded as set of object's dependencies. Subsequent injection of all necessary dependencies is also performed based on list of constructor arguments.
 
 Container does not collect or process object's fields or methods information nor perform direct field injection or setter injection.
 
-To provide consistent and precise module's behavior and avoid uncertainty or complex configurations it is allowed for module class to have only one explicit constructor with all nessecary dependencies declared as its arguments.
+To provide consistent and precise module's behavior and avoid uncertainty or complex configurations it is allowed for module class to have only one explicit constructor with all necessary dependencies declared as its arguments.
 
 ##### Module Types [:arrow_up_small:](#gem-injector-tutorial)
 
@@ -133,3 +133,4 @@ To provide consistent and precise module's behavior and avoid uncertainty or com
 While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from **Container**.*init*() method.
 
 [:arrow_backward: Back to README](./../README.md)
+
