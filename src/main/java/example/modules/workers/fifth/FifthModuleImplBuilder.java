@@ -1,0 +1,37 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package example.modules.workers.fifth;
+
+import com.drs.gem.injector.module.ModuleBuilder;
+
+import example.modules.FifthModule;
+import example.modules.FourthModule;
+import example.modules.SecondModule;
+import example.modules.SixthModule;
+
+/**
+ *
+ * @author Diarsid
+ */
+class FifthModuleImplBuilder implements ModuleBuilder<FifthModule>{
+    
+    private SecondModule second;
+    private SixthModule sixth;
+    private FourthModule fourth;
+
+    FifthModuleImplBuilder(SecondModule second, SixthModule sixth, FourthModule fourth) {
+        this.second = second;
+        this.sixth = sixth;
+        this.fourth = fourth;
+    }    
+    
+    @Override
+    public FifthModule buildModule(){
+        System.out.println("   >> Builder.build() in 5!");
+        return new FifthModuleImpl(second, fourth, sixth);
+    }
+}

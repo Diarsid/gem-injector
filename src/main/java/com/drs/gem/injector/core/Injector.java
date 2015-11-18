@@ -1,0 +1,110 @@
+/*
+ * Copyright (C) 2015 Diarsid
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package com.drs.gem.injector.core;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import com.drs.gem.injector.exceptions.ModuleInstantiationException;
+import com.drs.gem.injector.exceptions.ModuleNotFoundException;
+import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.ModuleBuilder;
+
+/**
+ *
+ * @author Diarsid
+ */
+class Injector {
+    
+    private final ModulesInfo modulesInfo;
+
+    Injector(ModulesInfo info) {
+        this.modulesInfo = info;
+    }
+    
+    Module newModule(Constructor buildCons, Class moduleInterface){        
+        Class[] dependencies = buildCons.getParameterTypes();
+        try {
+            
+            Object obj;
+            if (dependencies.length == 0){
+                obj = buildCons.newInstance();
+            } else {
+                Module[] depModules = findDependencies(moduleInterface, dependencies);
+                obj = buildCons.newInstance(depModules);
+            }
+            
+            if (ifObjectIsModuleBuilder(obj)){
+                ModuleBuilder builder = (ModuleBuilder) obj;
+                return builder.buildModule();
+            } else {
+                return (Module) obj;
+            }
+            
+        } catch (IllegalAccessException e){
+            throw new ModuleInstantiationException(
+                    moduleInterface.getCanonicalName() + 
+                    " instantiation exception: illegel access.", e);
+        } catch (IllegalArgumentException e){
+            throw new ModuleInstantiationException(
+                    moduleInterface.getCanonicalName() + 
+                    " instantiation exception: " +
+                    "illegel arguments in constructor.", e);
+        } catch (InstantiationException e) {
+            throw new ModuleInstantiationException(
+                    moduleInterface.getCanonicalName() + 
+                    " instantiation exception: " +
+                    "underlying implementation class is abstract.", e);
+        } catch (InvocationTargetException e) {
+            throw new ModuleInstantiationException(
+                    moduleInterface.getCanonicalName() + 
+                    " instantiation exception: " +
+                    "underlying constructor throws exception.", e);
+        }
+    }
+        
+    private Module[] findDependencies(Class moduleInterf, Class[] dependencies){
+        Module[] foundModules = new Module[dependencies.length];        
+        for (int i = 0; i < foundModules.length; i++){
+            
+            Class dependencyModule = dependencies[i];
+            
+            if (modulesInfo.isModuleSingleton(dependencyModule)){
+                Module module = modulesInfo.getSingletons().get(dependencyModule);
+                if (module == null){
+                    throw new ModuleNotFoundException(
+                            "Dependency injection algorithm is broken in " + 
+                            moduleInterf.getCanonicalName() + ": " + 
+                            dependencyModule.getCanonicalName() + 
+                            " not found in Injector::Map<Class, Module> modules.");
+                }
+                foundModules[i] = module;
+            } else {
+                Constructor buildCons = modulesInfo.getConstructor(dependencyModule);
+                Module module = newModule(buildCons, dependencyModule);
+                foundModules[i] = module;
+            }            
+        }
+        return foundModules;
+    }
+    
+    private boolean ifObjectIsModuleBuilder(Object obj){
+        return ModuleBuilder.class.isAssignableFrom(obj.getClass());
+    }
+}

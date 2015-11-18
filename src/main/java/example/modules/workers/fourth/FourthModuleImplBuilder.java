@@ -1,0 +1,34 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package example.modules.workers.fourth;
+
+import com.drs.gem.injector.module.ModuleBuilder;
+
+import example.modules.FirstModule;
+import example.modules.FourthModule;
+import example.modules.ThirdModule;
+
+/**
+ *
+ * @author Diarsid
+ */
+class FourthModuleImplBuilder implements ModuleBuilder<FourthModule>{
+    
+    private ThirdModule third;
+    private FirstModule first;
+
+    public FourthModuleImplBuilder(FirstModule first, ThirdModule third) {
+        this.third = third;
+        this.first = first;        
+    }
+    
+    @Override 
+    public FourthModule buildModule(){
+        System.out.println("   >> Builder.build() in 4!");
+        return new FourthModuleImpl(third, first);
+    }
+}
