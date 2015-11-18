@@ -1,4 +1,4 @@
-![gem_injector_logo](http://i.imgur.com/GKg9XVG.png) 
+![gem_injector_logo](http://i.imgur.com/LEmM4lJ.png) 
 # Gem Injector 
 
 
