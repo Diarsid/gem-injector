@@ -73,7 +73,7 @@ When modules is declared and method .*init*() is invoked on **Container** instan
 
 Assume that there are some complex module depends on several other modules. Let it be, for example, **FifthModule** depends on **SecondModule**, **ThirdModule** and **FourthModule** (assume there are more then three previous modules have been designed). But while developing its functionality it turns out that there isn’t real necessity for **FifthModule** instance to use **ThirdModule** all the time. What is actually required is only some initial data that can be obtained from **ThirdModule** only once. After it **ThirdModule** instance actually becomes useless and redundant for **FifthModule**. But we still need its information i.e. depend on it. Moreover, let’s assume that it is necessary to perform some additional preliminary actions to initialize **FifthModule**. Those operations can be incapsulated in package-private classes and methods in the same package in which **FifthModule** is located. 
 
-Let’s extend our previous dependensies graph with **FourthModule** and **FifthModule**. This will look something like this:
+Let’s extend our previous dependencies graph with **FourthModule** and **FifthModule**. This will look something like this:
 
 ![second_graph](http://i.imgur.com/0Am4yiA.png)
 
