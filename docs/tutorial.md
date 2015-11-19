@@ -96,12 +96,13 @@ All we need now in order to use **FifthModule** (in conjunction with container) 
 
 ![additional_declaration](http://i.imgur.com/SYVa4pq.png)
 
-And that’s all! **Container** will find all **ModuleBuilder** imlemenetations of appropriate modules, init them and execute .*buildModule*(**Module**... modules) methods to get appropriate module instances.
+And that’s all! **Container** will find all **ModuleBuilder** imlemenetations of appropriate modules, init them and execute .*buildModule*() methods to get appropriate module instances.
 
 ##### Module Builder restrictions [:arrow_up_small:](#gem-injector-tutorial)
 There are only several restrictions about **ModuleBuilder**:
 *	**ModuleBuilder** implementation classes must be located in the same packages as their corresponding Module implementation classes;
 *	**ModuleBuilder** implementation class must have its name equals to **Module** implementation class name but ends with “Builder”. E.g. module implementation class is called as “my.app.some.package.SomeImportantModule” then ModuleBuilder implementation class must be called as “my.app.some.package.SomeImportantModuleBuilder”.
+*	**ModuleBuilder** implementation class must have only one constructor with all explicitly declared module dependencies. Container finds **ModuleBuilder** constructor, resolves its dependencies (if they have been declared as modules in this constructor), creates **ModuleBuilder** instance and calls .*buildModule*() method. Container ignores any other **ModuleBuilder** implementation class methods, that's why all preliminary actions must be performed directly in .*buildModule*() method body.
 
 #### Container details
 ##### Common code requirements [:arrow_up_small:](#gem-injector-tutorial)
