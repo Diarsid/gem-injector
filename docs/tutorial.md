@@ -86,11 +86,11 @@ And implement it as we need:
 ![5th_class](http://i.imgur.com/KRj7I3m.png)
 
 ##### ModuleBuilder interface [:arrow_up_small:](#gem-injector-tutorial)
-This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all necessary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class in the same package with **FifthModuleWorker** and **@Override** .*buildModule*() as described below:
+This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all necessary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class, provide it with an appropriate constructor, that accepts all required module dependencies, **@Override** .*buildModule*() method and place this class in the same package with **FifthModuleWorker**. It is described in code snippet below:
 
-![module_builder](http://i.imgur.com/T6yLv4b.png)
+![module_builder](http://i.imgur.com/qOySBFy.png)
 
-As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as .*buildModule*() method arguments. 
+As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as **ModuleBuilder** implementation class constructor's arguments. They will be injected during **ModuleBuilder** object creation by container itself so it is necessary to save them somewhere to use them later in .*buildModule*() method.
 
 All we need now in order to use **FifthModule** (in conjunction with container) is to declare new modules as we have done it for previous modules earlier:
 
