@@ -19,34 +19,99 @@
 package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 import com.drs.gem.injector.exceptions.ContainerInitializationException;
 import com.drs.gem.injector.exceptions.ForbiddenModuleDeclarationException;
-import com.drs.gem.injector.exceptions.InvalidBuilderDeclarationException;
-import com.drs.gem.injector.exceptions.InvalidModuleImplementationException;
-import com.drs.gem.injector.exceptions.InvalidModuleInterfaceException;
 import com.drs.gem.injector.exceptions.ModuleDeclarationException;
 import com.drs.gem.injector.module.Module;
-import com.drs.gem.injector.module.ModuleBuilder;
 
 /**
- *
+ * Pivotal class represents container itself. Receives information about
+ * modules, produces module instances and relay information about modules 
+ * into {@link com.drs.gem.injector.core.Injector Injector}.
+ * 
  * @author Diarsid
+ * @see com.drs.gem.injector.core.Container
+ * @see com.drs.gem.injector.core.ModulesInfo
  */
 public class ModulesContainer implements Container, ModulesInfo {
     
+    /**
+     * Map<Class, Class> contains entries where key is module interface 
+     * class object and value is class whose is responsible for
+     * module implementation class object creation. It can be module
+     * implementation class itself or its appropriate {@link 
+     * com.drs.gem.injector.module.ModuleBuilder ModuleBuilder} class.
+     * 
+     * @see com.drs.gem.injector.module.ModuleBuilder
+     */
     private final Map<Class, Class> declaredModules;
+    
+    /**
+     * Map<Class, Constructor> contains entries where key is module interface 
+     * class object and value is constructor of appropriate module 
+     * implementation class. It can be ModuleBuilder constructor as well.
+     * 
+     * @see com.drs.gem.injector.module.ModuleBuilder
+     */
     private final Map<Class, Constructor> constructors;
+    
+    /**
+     * Map<Class, ModuleType> contains entries where key is module interface 
+     * class object and value is {@link 
+     * com.drs.gem.injector.core.ModuleType ModuleType} object.
+     * 
+     * @see com.drs.gem.injector.core.ModuleType
+     */
     private final Map<Class, ModuleType> moduleTypes;
+    
+    /**
+     * Map<Class, Module> contains entries where key is module interface 
+     * class object with Module Type SINGLETON and value is corresponding
+     * module instance which is fully initialized and ready to work.
+     */
     private final Map<Class, Module> singletonModules;
-    private final PriorityQueue<InjectionPriority> injectionPriorities;    
-    private final boolean constructorDeclaration;
-    private boolean wasContainerInitialized;
+    
+    /**
+     * ModuleMetaData[] that contains ModuleMetaData 
+     * objects sorted with natural ordering. See {@link 
+     * com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}
+     * for more details.
+     * 
+     * @see com.drs.gem.injector.core.ModuleMetaData
+     */
+    private ModuleMetaData[] injectionPriorities;
+    
+    /**
+     * TRUE if modules were declared via {@link com.drs.gem.injector.core.Declaration
+     * Declaration} objects. FALSE otherwise.
+     * 
+     * @see com.drs.gem.injector.core.Declaration
+     */
+    private final boolean constructorDeclaration;  
+    
+    /**
+     * Simple factory object is used to avoid "new" operator inside 
+     * the container instance methods.
+     * 
+     * @see com.drs.gem.injector.core.GemInjectorFactory
+     */
     private final GemInjectorFactory factory;
+    
+    /**
+     * Object contains helper methods to verify module interfaces, 
+     * implementations, builders, constructors.
+     * 
+     * @see com.drs.gem.injector.core.ContainerHelper
+     */
+    private final ContainerHelper helper;
+    private boolean wasContainerInitialized;
+    
     
 
     ModulesContainer(GemInjectorFactory factory) {
@@ -54,10 +119,11 @@ public class ModulesContainer implements Container, ModulesInfo {
         this.constructors = new HashMap<>();
         this.moduleTypes = new HashMap<>();
         this.singletonModules = new HashMap<>();
-        this.injectionPriorities = new PriorityQueue<>();
+        this.injectionPriorities = null;
         this.constructorDeclaration = false;
         this.wasContainerInitialized = false;
         this.factory = factory;
+        this.helper = factory.buildHelper();
     }
     
     ModulesContainer(GemInjectorFactory factory, Declaration... declarations) {
@@ -65,10 +131,11 @@ public class ModulesContainer implements Container, ModulesInfo {
         this.constructors = new HashMap<>();
         this.moduleTypes = new HashMap<>();
         this.singletonModules = new HashMap<>();
-        this.injectionPriorities = new PriorityQueue<>();
+        this.injectionPriorities = null;
         this.constructorDeclaration = true;  
         this.wasContainerInitialized = false;
         this.factory = factory;
+        this.helper = factory.buildHelper();
         processDeclarations(declarations);
     }
     
@@ -83,6 +150,12 @@ public class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.Container
+     * Container} interface. See full method description in Container interface.
+     * 
+     * @see com.drs.gem.injector.core.Container
+     */    
     @Override
     public void declareModule(
             String moduleInterfaceName, String moduleImplemName, ModuleType type){
@@ -100,18 +173,26 @@ public class ModulesContainer implements Container, ModulesInfo {
         }
         parseModuleDeclaration(moduleInterfaceName, moduleImplemName, type);
     }
-           
+    
+    /**
+     * Processes all necessary information about module from String parameters,
+     * verifies it and saves in container.
+     * 
+     * @param moduleInterfaceName   module interface canonical name
+     * @param moduleImplemName      module implementation class canonical name
+     * @param type                  module type singleton or prototype
+     */
     private void parseModuleDeclaration(
             String moduleInterfaceName, String moduleImplemName, ModuleType type){
         
-        Class moduleInterface = getClassByName(moduleInterfaceName);
-        Class moduleBuildClass = getClassByName(moduleImplemName);        
+        Class moduleInterface = helper.getClassByName(moduleInterfaceName);
+        Class moduleBuildClass = helper.getClassByName(moduleImplemName);        
         
-        verifyModuleInterface(moduleInterface);
-        verifyModuleImplementation(moduleInterface, moduleBuildClass);
-        Class moduleBuilder = ifModuleHasBuilder(moduleImplemName);
+        helper.verifyModuleInterface(moduleInterface);
+        helper.verifyModuleImplementation(moduleInterface, moduleBuildClass);
+        Class moduleBuilder = helper.ifModuleHasBuilder(moduleImplemName);
         if ( moduleBuilder != null ) {
-            verifyModuleBuilder(moduleBuilder);
+            helper.verifyModuleBuilder(moduleBuilder);
             moduleBuildClass = moduleBuilder;
         }
         
@@ -121,64 +202,14 @@ public class ModulesContainer implements Container, ModulesInfo {
         } else {
             throw new ModuleDeclarationException("Module declaration failure.");
         }
-    }
+    }    
     
-    private Class ifModuleHasBuilder(String moduleImplemName){
-        String moduleBuilderName = moduleImplemName + "Builder";
-        try {
-            Class builderClass = Class.forName(moduleBuilderName);
-            return builderClass;
-        } catch (ClassNotFoundException e){
-            return null;
-        }
-    }
-    
-    private void verifyModuleBuilder(Class builderClass){
-        if ( ! ModuleBuilder.class.isAssignableFrom(builderClass) ){
-            throw new InvalidBuilderDeclarationException(
-                    "Invalid module builder implementation: " + 
-                    builderClass.getCanonicalName() + 
-                    "does not implement " + 
-                    ModuleBuilder.class.getCanonicalName());
-        }
-    }
-    
-    private void verifyModuleInterface(Class moduleInterface){
-        if ( ! moduleInterface.isInterface()){
-            throw new ModuleDeclarationException(
-                    "Incorrect module declaration: class " + 
-                    moduleInterface.getCanonicalName() +
-                    " is not interface.");
-        } else if ( ! Module.class.isAssignableFrom(moduleInterface)){
-            throw new InvalidModuleInterfaceException(
-                    "Invalid Module interface: " + 
-                    moduleInterface.getCanonicalName() + 
-                    " does not implement " + Module.class.getCanonicalName() + ".");
-        }
-    }
-    
-    private void verifyModuleImplementation(Class moduleInterface, Class moduleImplem){
-        if ( ! moduleInterface.isAssignableFrom(moduleImplem)){
-            throw new InvalidModuleImplementationException(
-                    "Invalid module implementation: " + 
-                    moduleImplem.getCanonicalName() + 
-                    "does not implement " + 
-                    moduleInterface.getCanonicalName() + ".");
-        }
-    }
-    
-    private Class getClassByName(String className){
-        Class classImpl;
-        try {
-            classImpl = Class.forName(className);
-            return classImpl;
-        } catch (ClassNotFoundException e){
-            throw new ModuleDeclarationException(
-                    "Incorrect module declaration: class " +
-                    className + " does not exist.");
-        }
-    }
-    
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.Container
+     * Container} interface. See full method description in Container interface.
+     * 
+     * @see com.drs.gem.injector.core.Container
+     */ 
     @Override
     public void init(){     
         if (declaredModules.isEmpty()){
@@ -191,26 +222,17 @@ public class ModulesContainer implements Container, ModulesInfo {
         wasContainerInitialized = true;
     }    
     
+    /**
+     * Collects all constructors of all declared module and saves them
+     * in container for further object instantiation.
+     */
     private void collectConstructors(){
         for(Map.Entry<Class, Class> pair : declaredModules.entrySet()){
             Class moduleInterface = pair.getKey();
             Class moduleBuildClass = pair.getValue();
             
-            Constructor[] moduleConss = moduleBuildClass.getDeclaredConstructors();
-            
-            if (moduleConss.length != 1){
-                if (moduleBuildClass.getSimpleName().contains("ModuleBuilder")){
-                    throw new InvalidBuilderDeclarationException(
-                            "Invalid module builder implementation: " + 
-                            moduleBuildClass.getCanonicalName() + 
-                            " has more than one declared constructor.");
-                } else {
-                    throw new InvalidModuleImplementationException(
-                            "Invalid module implementation: " + 
-                            moduleBuildClass.getCanonicalName() + 
-                            " has more than one declared constructor.");
-                }
-            }
+            Constructor[] moduleConss = moduleBuildClass.getDeclaredConstructors();            
+            helper.verifyIfModuleHasOneConstructor(moduleConss);
             
             Constructor moduleCon = moduleConss[0];
             moduleCon.setAccessible(true);
@@ -218,28 +240,52 @@ public class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
+    /**
+     * Creates new {@link com.drs.gem.injector.core.ModuleMetaData 
+     * ModuleMetaData} objects, calculates their actual priority using
+     * {@link com.drs.gem.injector.core.InjectionPriorityCalculator 
+     * InjectionPriorityCalculator} sort them by their natural ordering
+     * and stores them in ModuleMetaData[] container field.
+     * 
+     * @see com.drs.gem.injector.core.ModuleMetaData
+     * @see com.drs.gem.injector.core.InjectionPriorityCalculator
+     */
     private void rateConstructorsByPriority(){
         InjectionPriorityCalculator priorityCalculator = 
                 factory.buildCalculator((ModulesInfo) this);
+        List<ModuleMetaData> metaDatas = new ArrayList<>();
+        
         for(Map.Entry<Class, Class> pair : declaredModules.entrySet()){
             Class moduleInterface = pair.getKey();
             Constructor buildCons = constructors.get(moduleInterface);
             ModuleType type = moduleTypes.get(moduleInterface);
             
-            InjectionPriority ip = factory.newInjectionPriority(
+            ModuleMetaData metaData = factory.buildMetaData(
                     moduleInterface, buildCons, type);
-            int priority = priorityCalculator.calculatePriority(ip);
-            ip.setPriority(priority);          
-            injectionPriorities.offer(ip);
+            int priority = priorityCalculator.calculatePriority(metaData);
+            metaData.setPriority(priority);
+            
+            metaDatas.add(metaData);
         }
+        
+        injectionPriorities = 
+                metaDatas.toArray(new ModuleMetaData[declaredModules.size()]);
+        Arrays.sort(injectionPriorities);
     }
     
+    /**
+     * Initializes all singleton modules in order of corresponding 
+     * ModuleMetaData natural ordering, provided by PriorityQueue.
+     * 
+     * @see com.drs.gem.injector.core.ModuleMetaData
+     */
     private void injectSingletons(){
-        Injector injector = factory.buildInjector((ModulesInfo) this);
-        for (InjectionPriority ip : getPriorities()){
-            if (ip.getType().equals(ModuleType.SINGLETON)){
-                Constructor buildCons = ip.getConstructor();        
-                Class moduleInterface = ip.getModuleInterface();
+        Injector injector = factory.buildInjector((ModulesInfo) this);        
+        
+        for (ModuleMetaData metaData : injectionPriorities){
+            if (metaData.getType().equals(ModuleType.SINGLETON)){
+                Constructor buildCons = metaData.getConstructor();        
+                Class moduleInterface = metaData.getModuleInterface();
                 
                 Module module = injector.newModule(buildCons, moduleInterface);
                 singletonModules.put(moduleInterface, module);
@@ -247,6 +293,12 @@ public class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.Container
+     * Container} interface. See full method description in Container interface.
+     * 
+     * @see com.drs.gem.injector.core.Container
+     */ 
     @Override
     public <M extends Module> M getModule(Class<M> moduleInterface){      
         if ( ! wasContainerInitialized){
@@ -265,32 +317,48 @@ public class ModulesContainer implements Container, ModulesInfo {
             return module;
         }
     }
-    
+ 
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.ModulesInfo
+     * ModulesInfo} interface. See full method description in ModulesInfo interface.
+     * 
+     * @see com.drs.gem.injector.core.ModulesInfo
+     */
     @Override
     public boolean isModuleSingleton(Class moduleInterface){
         return (moduleTypes.get(moduleInterface).equals(ModuleType.SINGLETON));
     }
     
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.ModulesInfo
+     * ModulesInfo} interface. See full method description in ModulesInfo interface.
+     * 
+     * @see com.drs.gem.injector.core.ModulesInfo
+     */    
     @Override
     public Constructor getConstructor(Class moduleInterface){
         return constructors.get(moduleInterface);
     }
     
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.ModulesInfo
+     * ModulesInfo} interface. See full method description in ModulesInfo interface.
+     * 
+     * @see com.drs.gem.injector.core.ModulesInfo
+     */
     @Override
     public boolean ifConstructorExists(Class moduleInterface){
         return constructors.containsKey(moduleInterface);
     }
     
+    /**
+     * Overrides abstract method in {@link com.drs.gem.injector.core.ModulesInfo
+     * ModulesInfo} interface. See full method description in ModulesInfo interface.
+     * 
+     * @see com.drs.gem.injector.core.ModulesInfo
+     */
     @Override
     public Map<Class, Module> getSingletons(){
         return singletonModules;
-    }
-    
-    @Override
-    public InjectionPriority[] getPriorities(){
-        InjectionPriority[] priorities = injectionPriorities
-                .toArray(new InjectionPriority[injectionPriorities.size()]);
-        Arrays.sort(priorities);
-        return priorities;
     }
 }

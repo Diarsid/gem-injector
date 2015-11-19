@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class ForbiddenModuleDeclarationException extends RuntimeException {
 
     public ForbiddenModuleDeclarationException(String message) {

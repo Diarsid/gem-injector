@@ -21,8 +21,14 @@ package com.drs.gem.injector.core;
 import java.util.Objects;
 
 /**
- *
- * @author Diarsid
+ * Object of ModuleDeclaraion class represents declaration of one module.
+ * It is used in {@link com.drs.gem.injector.core.Declaration Declaration} 
+ * to convey necessary information about new module into {@link 
+ * com.drs.gem.injector.core.Container Container}.
+ * 
+ * @author  Diarsid
+ * @see     com.drs.gem.injector.core.Declaration
+ * @see     com.drs.gem.injector.core.Container
  */
 public class ModuleDeclaration {
     

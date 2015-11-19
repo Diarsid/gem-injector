@@ -18,9 +18,14 @@
 package com.drs.gem.injector.module;
 
 /**
- *
+ * Marker interface to define concrete interfaces as modules to use them 
+ * within a container. To become module in the sense of this container 
+ * and to become available for processing in container any interface that 
+ * has been designed as module has to extend this interface.
+ * 
  * @author Diarsid
+ * @see com.drs.gem.injector.core.Container
+ * @see com.drs.gem.injector.core.ModulesContainer
  */
-public interface Module {
-    
+public interface Module {    
 }

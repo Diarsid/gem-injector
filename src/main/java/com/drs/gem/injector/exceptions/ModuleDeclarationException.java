@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class ModuleDeclarationException extends RuntimeException{
     
     public ModuleDeclarationException(String message){

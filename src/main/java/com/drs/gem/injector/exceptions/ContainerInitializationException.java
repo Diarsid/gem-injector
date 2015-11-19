@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class ContainerInitializationException extends RuntimeException {
 
     public ContainerInitializationException(String message) {

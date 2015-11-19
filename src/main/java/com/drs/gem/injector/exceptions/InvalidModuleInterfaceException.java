@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class InvalidModuleInterfaceException extends RuntimeException {
 
     public InvalidModuleInterfaceException(String message){

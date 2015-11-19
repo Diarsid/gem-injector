@@ -21,27 +21,71 @@ package com.drs.gem.injector.core;
 import java.lang.reflect.Constructor;
 
 /**
- *
- * @author Diarsid
+ * Simple factory which is responsible for instantiation of
+ * new objects that are required by demand in other classes.
+ * 
+ * @author  Diarsid
+ * @see     com.drs.gem.injector.core.ModuleMetaData
+ * @see     com.drs.gem.injector.core.InjectionPriorityCalculator
+ * @see     com.drs.gem.injector.core.Injector
  */
 class GemInjectorFactory {
 
     GemInjectorFactory() {
     }
     
+    /**
+     * Factory method returns new {@link com.drs.gem.injector.core.Injector Injector}
+     * object. 
+     * 
+     * @param info  ModulesInfo interface that used to obtain info about modules.
+     * @return      new Injector object.
+     * @see         com.drs.gem.injector.core.ModulesInfo
+     */
     Injector buildInjector(ModulesInfo info){
         return new Injector(info);
     }
     
-    InjectionPriority newInjectionPriority(
+    /**
+     * Factory method returns new {@link com.drs.gem.injector.core.ModuleMetaData 
+     * ModuleMetaData} object. 
+     * 
+     * @param moduleInterface   canonical name of module interface.
+     * @param cons              Constructor represent this module constructor.
+     * @param type              module type.
+     * @return                  ModuleMetaData instance.
+     * @see                     com.drs.gem.injector.core.ModuleMetaData
+     * @see                     com.drs.gem.injector.core.ModuleType
+     */
+    ModuleMetaData buildMetaData(
             Class moduleInterface,
             Constructor cons, 
             ModuleType type){
         
-        return new InjectionPriority(moduleInterface, cons, type);
+        return new ModuleMetaData(moduleInterface, cons, type);
     }
     
+    /**
+     * Factory method returns new 
+     * {@link com.drs.gem.injector.core.InjectionPriorityCalculator 
+     * InjectionPriorityCalculator} object.
+     * 
+     * @param info  ModulesInfo interface used to obtain info about modules.
+     * @return      new InjectionPriorityCalculator object.
+     * @see         com.drs.gem.injector.core.InjectionPriorityCalculator
+     * @see         com.drs.gem.injector.core.ModulesInfo
+     */
     InjectionPriorityCalculator buildCalculator(ModulesInfo info){
         return new InjectionPriorityCalculator(info);
+    }
+    
+    /**
+     * Factory method returns {@link com.drs.gem.injector.core.ContainerHelper
+     * ModuleVerifier} object.
+     * 
+     * @return new ModuleVerifier object
+     */
+    ContainerHelper buildHelper(){
+        return new ContainerHelper();
     }
 }

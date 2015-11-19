@@ -26,8 +26,12 @@ import com.drs.gem.injector.exceptions.CyclicDependencyException;
 import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
 
 /**
- *
- * @author Diarsid
+ * Class is responsible for calculation of module's real dependencies 
+ * quantity. See detailed description in {@link 
+ * com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}.
+ * 
+ * @author  Diarsid
+ * @see     com.drs.gem.injector.core.ModuleMetaData
  */
 class InjectionPriorityCalculator {
     
@@ -37,21 +41,46 @@ class InjectionPriorityCalculator {
         this.info = info;
     }
     
-    
-    
-    int calculatePriority(InjectionPriority ip){
-        if (ip.getConstructor().getParameterCount() != 0){
-            return this.calculateFullDependenciesQty(ip);
+    /**
+     * Calculates injection priority. It value is actually the quantity of 
+     * modules dependencies.
+     * See detailed description in 
+     * {@link com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}.
+     * 
+     * @param metaData    ModuleMetaData which actual priority should be calculated
+     * @return      quantity of module dependencies, i.e. its injection priority
+     * @see         com.drs.gem.injector.core.ModuleMetaData
+     */    
+    int calculatePriority(ModuleMetaData metaData){
+        if (metaData.getConstructor().getParameterCount() != 0){
+            return this.calculateFullDependenciesQty(metaData);
         } else {
             return 0;
         }     
     }
     
-    private int calculateFullDependenciesQty(InjectionPriority ip){
+    /**
+     * Takes module's Constructor from ModuleMetaData objects and 
+ obtains all its parameters which are modules. Then takes constructor 
+     * of each those modules and obtains their parameters too, calculates 
+     * them and so on, until all zero-dependencies modules will be reached.
+     * Sum of all those dependencies will determine real dependencies quantity
+     * of this concrete module.
+     * 
+     * In fact, this method will walk through the dependencies graph begins 
+     * from this module and will calculate all nodes (dependencies in graph)
+     * that it can reach from this module until it will find all nodes that 
+     * don't have any dependencies. 
+     * 
+     * @param metaData    ModuleMetaData contains description of module which
+              real dependencies quantity should be calculated
+     * @return      quantity of module dependencies
+     */
+    private int calculateFullDependenciesQty(ModuleMetaData metaData){
         
         Set<Constructor> dependencies = new HashSet<>();
         
-        Class[] firstLevelDependencies = ip.getConstructor().getParameterTypes();
+        Class[] firstLevelDependencies = metaData.getConstructor().getParameterTypes();
         for (Class firstLevelDependency : firstLevelDependencies){
             checkIfDependencyDeclaredAsModule(firstLevelDependency);
             Constructor dependencyConstr = info.getConstructor(firstLevelDependency);
@@ -67,7 +96,7 @@ class InjectionPriorityCalculator {
                 Class[] nestedDependencies = dependency.getParameterTypes();
                 for (Class dependencyClass : nestedDependencies){
                     checkIfModuleHasCyclicDependencies(
-                            ip, dependencyClass, dependency.getDeclaringClass());
+                            metaData, dependencyClass, dependency.getDeclaringClass());
                     checkIfDependencyDeclaredAsModule(dependencyClass);
                     Constructor depCon = info.getConstructor(dependencyClass);
                     if ( ! dependencies.contains(depCon)){
@@ -85,15 +114,15 @@ class InjectionPriorityCalculator {
     }
     
     private void checkIfModuleHasCyclicDependencies(
-            InjectionPriority ip, Class dependency, Class declaration){
+            ModuleMetaData metaData, Class dependency, Class declaration){
         
-        if (ip.getModuleInterface().equals(dependency)){
+        if (metaData.getModuleInterface().equals(dependency)){
             throw new CyclicDependencyException(
                     "Cyclic dependency detected: " + 
-                    ip.getModuleInterface().getCanonicalName() + " depend on " +
+                    metaData.getModuleInterface().getCanonicalName() + " depend on " +
                     declaration.getCanonicalName() + 
                     " which has cyclic dependency on " + 
-                    ip.getModuleInterface().getCanonicalName());
+                    metaData.getModuleInterface().getCanonicalName());
         }
     }
     

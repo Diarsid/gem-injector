@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class ModuleInstantiationException extends RuntimeException {
 
     public ModuleInstantiationException(String message, Throwable cause) {

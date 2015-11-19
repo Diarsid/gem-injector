@@ -27,7 +27,10 @@ import com.drs.gem.injector.module.Module;
 import com.drs.gem.injector.module.ModuleBuilder;
 
 /**
- *
+ * Injector is class that is responsible for procedure of direct 
+ * module object creation using Constructor objects of every module
+ * and searching its dependencies.
+ * 
  * @author Diarsid
  */
 class Injector {
@@ -38,6 +41,15 @@ class Injector {
         this.modulesInfo = info;
     }
     
+    /**
+     * Creates new module object and finds all required dependencies for it.
+     * 
+     * @param   buildCons       appropriate module Constructor. It can be 
+     *                          also constructor of module builder.
+     * @param   moduleInterface class object of module interface
+     * @return                  module object
+     * @see                     com.drs.gem.injector.module.ModuleBuilder
+     */
     Module newModule(Constructor buildCons, Class moduleInterface){        
         Class[] dependencies = buildCons.getParameterTypes();
         try {
@@ -78,7 +90,23 @@ class Injector {
                     "underlying constructor throws exception.", e);
         }
     }
-        
+    
+    /**
+     * Finds all modules which are represented by corresponding Class objects.
+     * If class object is a class object of singleton module, then corresponding
+     * module object will be retrieved from singletons storage.
+     * If class object is a class object of prototype module, then new module 
+     * will be created via {@link 
+     * #newModule(java.lang.reflect.Constructor, java.lang.Class) .newModule()} method.
+     * 
+     * These action will be performed recursively until all required dependencies 
+     * will be collected from storage (for singletons) or created afresh (for
+     * prototypes).
+     * 
+     * @param   moduleInterf    module whose dependencies will be found in method
+     * @param   dependencies    classes represent set of module's dependencies
+     * @return                  module objects which are dependencies for this module
+     */    
     private Module[] findDependencies(Class moduleInterf, Class[] dependencies){
         Module[] foundModules = new Module[dependencies.length];        
         for (int i = 0; i < foundModules.length; i++){

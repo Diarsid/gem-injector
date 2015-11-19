@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class InvalidModuleImplementationException extends RuntimeException{
     
     public InvalidModuleImplementationException(String message){

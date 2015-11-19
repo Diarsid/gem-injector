@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class ModuleNotFoundException extends RuntimeException {
 
     public ModuleNotFoundException(String message) {

@@ -24,18 +24,55 @@ import java.util.Map;
 import com.drs.gem.injector.module.Module;
 
 /**
- *
+ * Interface that hides {@link com.drs.gem.injector.core.ModulesContainer 
+ * ModulesContainer} object to provide only getter-like methods that grants
+ * access to information about modules, their types and constructors.
+ * 
  * @author Diarsid
+ * @see com.drs.gem.injector.core.ModulesContainer
  */
 interface ModulesInfo {
-    
-    InjectionPriority[] getPriorities();
-    
+       
+    /**
+     * Returns true if module of specified interface is singleton and false 
+     * if it is prototype.
+     * 
+     * @param moduleInterface   class object of declared module interface
+     * @return                  true if module type is singleton, false if
+     *                          type is prototype
+     * @see                     com.drs.gem.injector.core.ModulesContainer
+     */
     boolean isModuleSingleton(Class moduleInterface);
     
+    /**
+     * Returns Map<Class, Module> that contains entries where key is module  
+     * interface class object with Module Type SINGLETON and value is 
+     * corresponding module instance which is fully initialized and ready 
+     * to work.
+     * 
+     * @return  all initialized singletons declared in this container
+     * @see     com.drs.gem.injector.core.ModulesContainer
+     */
     Map<Class, Module> getSingletons();
     
+    /**
+     * Returns constructor that will be used to instantiate new objects
+     * of specified module or {@link com.drs.gem.injector.core.ModuleBuilder
+     * ModuleBuilder} of specified module.
+     * 
+     * @param moduleInterface   class object of declared module interface
+     * @return                  appropriate module constructor
+     * @see                     com.drs.gem.injector.core.ModulesContainer
+     */
     Constructor getConstructor(Class moduleInterface);
     
+    /**
+     * Checks if appropriate constructor assigned to specified module exists.
+     * 
+     * @param moduleInterface   class object of declared module interface
+     * @return                  true if there is constructor in this container 
+     *                          that assigned to specified module
+     * @see                     com.drs.gem.injector.core.ModulesContainer
+     */
     boolean ifConstructorExists(Class moduleInterface);
 }

@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class CyclicDependencyException extends RuntimeException {
 
     public CyclicDependencyException(String message) {

@@ -24,21 +24,41 @@ import java.util.Objects;
 import com.drs.gem.injector.exceptions.DependencyCalculationException;
 
 /**
- *
- * @author Diarsid
+ * Class which represents module, provides data about it and contains
+ * priority of each module when it has to be initialized.
+ * 
+ * It implements Comparable therefore its objects could be placed in 
+ * PriorityQueue in order to get their natural ordering.
+ * 
+ * ModuleMetaData is compared by int field priority. Its value 
+ * means how much real dependencies module that is described by this
+ * priority has. Not only direct dependencies (constructor arguments)
+ * are counted, but also dependencies of underlying modules, i.e. all
+ * quantity of modules in dependencies graph that lead to this module.
+ * 
+ * Information about dependencies quantity of every module is required 
+ * in order to compose sequential module initialization order when all
+ * modules without dependencies would be initialized firstly, modules 
+ * with one dependency secondarily and so on. This approach ensure that
+ * for every module when it time comes to initialize it all required 
+ * dependencies will be already initialized and injection will be 
+ * performed properly.
+ * 
+ * @author  Diarsid
+ * @see     com.drs.gem.injector.core.InjectionPriorityCalculator#calculatePriority(com.drs.gem.injector.core.InjectionPriority) 
  */
-class InjectionPriority implements Comparable<InjectionPriority>{
+class ModuleMetaData implements Comparable<ModuleMetaData>{
     
     private final Class moduleInterface;
     private final Constructor moduleConstructor;
     private final ModuleType type;
-    private int injectionPriority;
+    private int priority;
     
-    InjectionPriority(Class moduleInterface, Constructor cons, ModuleType type){        
+    ModuleMetaData(Class moduleInterface, Constructor cons, ModuleType type){        
         this.moduleInterface = moduleInterface;
         this.moduleConstructor = cons;
         this.type = type;
-        this.injectionPriority = -1;
+        this.priority = -1;
     }
     
     Constructor getConstructor(){
@@ -53,12 +73,23 @@ class InjectionPriority implements Comparable<InjectionPriority>{
         return type;
     }
     
+    /**
+     * This priority has initial value of -1 means that its actual 
+     * dependencies quantity has not been calculated yet. 
+     * {@link com.drs.gem.injector.core.InjectionPriorityCalculator 
+     * InjectionPriorityCalculator} is responsible for dependencies 
+     * quantity calculation.
+     * 
+     * @param   priority
+     * @see     com.drs.gem.injector.core.InjectionPriorityCalculator#calculatePriority(
+     *          com.drs.gem.injector.core.ModuleMetaData)
+     */
     void setPriority(int priority){
-        injectionPriority = priority;
+        this.priority = priority;
     }
-    
+        
     private void checkIfDependenciesIsCalculated(){
-        if ( injectionPriority < 0 ){
+        if ( priority < 0 ){
             throw new DependencyCalculationException(
                     "Exception in InjectionPriority(" +
                     moduleConstructor.getClass().getCanonicalName() +
@@ -68,11 +99,11 @@ class InjectionPriority implements Comparable<InjectionPriority>{
     }
     
     @Override
-    public int compareTo(InjectionPriority other){
+    public int compareTo(ModuleMetaData other){
         checkIfDependenciesIsCalculated();
-        if ( this.injectionPriority < other.injectionPriority ){
+        if ( this.priority < other.priority ){
             return -1;
-        } else if ( this.injectionPriority > other.injectionPriority ){
+        } else if ( this.priority > other.priority ){
             return 1;
         } else {
             return 0;
@@ -84,7 +115,7 @@ class InjectionPriority implements Comparable<InjectionPriority>{
         checkIfDependenciesIsCalculated();
         int hash = 5;
         hash = 79 * hash + Objects.hashCode(this.moduleConstructor);
-        hash = 79 * hash + Objects.hashCode(this.injectionPriority);
+        hash = 79 * hash + Objects.hashCode(this.priority);
         return hash;
     }
 
@@ -97,11 +128,11 @@ class InjectionPriority implements Comparable<InjectionPriority>{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final InjectionPriority other = (InjectionPriority) obj;
+        final ModuleMetaData other = (ModuleMetaData) obj;
         if (!Objects.equals(this.moduleConstructor, other.moduleConstructor)) {
             return false;
         }
-        if (!Objects.equals(this.injectionPriority, other.injectionPriority)) {
+        if (!Objects.equals(this.priority, other.priority)) {
             return false;
         }
         return true;

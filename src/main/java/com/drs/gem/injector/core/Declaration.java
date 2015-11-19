@@ -20,10 +20,23 @@ package com.drs.gem.injector.core;
 import java.util.Set;
 
 /**
- *
+ * Interface that could be used for modules declaration as alternative way to
+ * {@link com.drs.gem.injector.core.Container#declareModule(java.lang.String, 
+ * java.lang.String, com.drs.gem.injector.core.ModuleType) Container.declareModule(). }
+ * 
  * @author Diarsid
  */
 public interface Declaration {
     
+    /**
+     * Returns set of {@link com.drs.gem.injector.core.ModuleDeclaration 
+     * ModuleDeclaration} objects. Each object describes one declared module 
+     * that should be processed by appropriate 
+     * {@link com.drs.gem.injector.core.Container Container} instance.
+     * 
+     * @return  set of ModuleDeclaration objects.
+     * @see     com.drs.gem.injector.core.Container
+     * @see     com.drs.gem.injector.core.ModuleDeclaration
+     */
     Set<ModuleDeclaration> getDeclaredModules();
 }

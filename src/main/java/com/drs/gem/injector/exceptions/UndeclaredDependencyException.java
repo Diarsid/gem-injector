@@ -18,10 +18,6 @@
 
 package com.drs.gem.injector.exceptions;
 
-/**
- *
- * @author Diarsid
- */
 public class UndeclaredDependencyException extends RuntimeException {
 
     public UndeclaredDependencyException(String message) {
