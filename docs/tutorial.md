@@ -88,7 +88,7 @@ And implement it as we need:
 ##### ModuleBuilder interface [:arrow_up_small:](#gem-injector-tutorial)
 This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all necessary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class, provide it with an appropriate constructor, that accepts all required module dependencies, **@Override** .*buildModule*() method and place this class in the same package with **FifthModuleWorker**. It is described in code snippet below:
 
-![module_builder](http://i.imgur.com/qOySBFy.png)
+![module_builder](http://i.imgur.com/aquMQtS.png)
 
 As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as **ModuleBuilder** implementation class constructor's arguments. They will be injected during **ModuleBuilder** object creation by container itself so it is necessary to save them somewhere to use them later in .*buildModule*() method.
 
