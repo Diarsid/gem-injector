@@ -48,6 +48,16 @@ public interface Container {
     void init();
     
     /**
+     * Force container to use {@link com.drs.gem.injector.core.RecursiveInjector
+     * RecursiveInjector} for module instantiation instead of default {@link 
+     * com.drs.gem.injector.core.LoopInjector LoopInjector}. See {@link 
+     * com.drs.gem.injector.core.ModulesContainer ModulesContainer} for more 
+     * usage details and {@link com.drs.gem.injector.core.Injector
+     * Injector} interface for explanation about difference between two injector types.
+     */
+    void useRecursiveInjector();
+    
+    /**
      * Returns appropriate module instance that is fully initialized.
      * 
      * @param <M>           actual module interface.

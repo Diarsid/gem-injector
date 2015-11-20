@@ -20,7 +20,7 @@ package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +28,13 @@ import java.util.Map;
 import com.drs.gem.injector.exceptions.ContainerInitializationException;
 import com.drs.gem.injector.exceptions.ForbiddenModuleDeclarationException;
 import com.drs.gem.injector.exceptions.ModuleDeclarationException;
+import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
 import com.drs.gem.injector.module.Module;
 
 /**
  * Pivotal class represents container itself. Receives information about
  * modules, produces module instances and relay information about modules 
- * into {@link com.drs.gem.injector.core.Injector Injector}.
+ * into {@link com.drs.gem.injector.core.RecursiveInjector RecursiveInjector}.
  * 
  * @author Diarsid
  * @see com.drs.gem.injector.core.Container
@@ -78,14 +79,14 @@ public class ModulesContainer implements Container, ModulesInfo {
     private final Map<Class, Module> singletonModules;
     
     /**
-     * ModuleMetaData[] that contains ModuleMetaData 
+     * List<ModuleMetaData> that contains ModuleMetaData 
      * objects sorted with natural ordering. See {@link 
      * com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}
      * for more details.
      * 
      * @see com.drs.gem.injector.core.ModuleMetaData
      */
-    private ModuleMetaData[] injectionPriorities;
+    private List<ModuleMetaData> injectionPriorities;
     
     /**
      * TRUE if modules were declared via {@link com.drs.gem.injector.core.Declaration
@@ -110,7 +111,17 @@ public class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ContainerHelper
      */
     private final ContainerHelper helper;
-    private boolean wasContainerInitialized;
+    
+    /**
+     * Indicates if container should use {@link com.drs.gem.injector.core.RecursiveInjector
+     * RecursiveInjector} for module instantiation.
+     * Default value is false, thus default injector is {@link 
+     * com.drs.gem.injector.core.LoopInjector LoopInjector}.
+     * 
+     * @see com.drs.gem.injector.core.RecursiveInjector
+     * @see com.drs.gem.injector.core.LoopInjector
+     */
+    private boolean useRecursiveInjector;
     
     
 
@@ -121,7 +132,7 @@ public class ModulesContainer implements Container, ModulesInfo {
         this.singletonModules = new HashMap<>();
         this.injectionPriorities = null;
         this.constructorDeclaration = false;
-        this.wasContainerInitialized = false;
+        this.useRecursiveInjector = false;
         this.factory = factory;
         this.helper = factory.buildHelper();
     }
@@ -132,8 +143,8 @@ public class ModulesContainer implements Container, ModulesInfo {
         this.moduleTypes = new HashMap<>();
         this.singletonModules = new HashMap<>();
         this.injectionPriorities = null;
-        this.constructorDeclaration = true;  
-        this.wasContainerInitialized = false;
+        this.constructorDeclaration = true;
+        this.useRecursiveInjector = false;
         this.factory = factory;
         this.helper = factory.buildHelper();
         processDeclarations(declarations);
@@ -202,7 +213,12 @@ public class ModulesContainer implements Container, ModulesInfo {
         } else {
             throw new ModuleDeclarationException("Module declaration failure.");
         }
-    }    
+    }   
+    
+    @Override
+    public void useRecursiveInjector(){
+        useRecursiveInjector = true;
+    }
     
     /**
      * Overrides abstract method in {@link com.drs.gem.injector.core.Container
@@ -217,9 +233,8 @@ public class ModulesContainer implements Container, ModulesInfo {
                     "No modules have been declared.");
         }
         collectConstructors();
-        rateConstructorsByPriority();
+        rateModulesByInjectionPriority();
         injectSingletons();
-        wasContainerInitialized = true;
     }    
     
     /**
@@ -250,7 +265,7 @@ public class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModuleMetaData
      * @see com.drs.gem.injector.core.InjectionPriorityCalculator
      */
-    private void rateConstructorsByPriority(){
+    private void rateModulesByInjectionPriority(){
         InjectionPriorityCalculator priorityCalculator = 
                 factory.buildCalculator((ModulesInfo) this);
         List<ModuleMetaData> metaDatas = new ArrayList<>();
@@ -268,9 +283,8 @@ public class ModulesContainer implements Container, ModulesInfo {
             metaDatas.add(metaData);
         }
         
-        injectionPriorities = 
-                metaDatas.toArray(new ModuleMetaData[declaredModules.size()]);
-        Arrays.sort(injectionPriorities);
+        Collections.sort(metaDatas);
+        injectionPriorities = Collections.unmodifiableList(metaDatas);
     }
     
     /**
@@ -280,8 +294,7 @@ public class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModuleMetaData
      */
     private void injectSingletons(){
-        Injector injector = factory.buildInjector((ModulesInfo) this);        
-        
+        Injector injector = getInjector();
         for (ModuleMetaData metaData : injectionPriorities){
             if (metaData.getType().equals(ModuleType.SINGLETON)){
                 Constructor buildCons = metaData.getConstructor();        
@@ -293,6 +306,14 @@ public class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
+    private Injector getInjector(){
+        if ( useRecursiveInjector ) {
+            return factory.buildRecursiveInjector((ModulesInfo) this);
+        } else {
+            return factory.buildLoopInjector((ModulesInfo) this);
+        }
+    }
+    
     /**
      * Overrides abstract method in {@link com.drs.gem.injector.core.Container
      * Container} interface. See full method description in Container interface.
@@ -301,7 +322,7 @@ public class ModulesContainer implements Container, ModulesInfo {
      */ 
     @Override
     public <M extends Module> M getModule(Class<M> moduleInterface){      
-        if ( ! wasContainerInitialized){
+        if ( injectionPriorities == null ){
             throw new ContainerInitializationException(
                     "Modules::init() was not invoked.");
         }
@@ -310,7 +331,7 @@ public class ModulesContainer implements Container, ModulesInfo {
             M module = moduleInterface.cast(uncastedModule);
             return module;
         } else {
-            Injector injector = factory.buildInjector((ModulesInfo) this);
+            Injector injector = getInjector();
             Constructor buildCons = constructors.get(moduleInterface);
             Module uncastedModule = injector.newModule(buildCons, moduleInterface);
             M module = moduleInterface.cast(uncastedModule);
@@ -360,5 +381,17 @@ public class ModulesContainer implements Container, ModulesInfo {
     @Override
     public Map<Class, Module> getSingletons(){
         return singletonModules;
+    }
+    
+    @Override
+    public List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface){
+        for (int i = 0; i < injectionPriorities.size(); i++){
+            if(injectionPriorities.get(i).getModuleInterface().equals(moduleInterface)){
+                return injectionPriorities.subList(0, i + 1);
+            }
+        }
+        throw new UndeclaredDependencyException(
+                "Undeclared dependency: " + moduleInterface.getCanonicalName() + 
+                "not contained in Container.");
     }
 }

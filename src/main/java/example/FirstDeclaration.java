@@ -7,7 +7,6 @@
 package example;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import com.drs.gem.injector.core.Declaration;
@@ -30,7 +29,7 @@ class FirstDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.FirstModule", 
                 "example.modules.workers.first.FirstModuleImpl",
-                ModuleType.SINGLETON));
+                ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.SecondModule", 
@@ -40,7 +39,7 @@ class FirstDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.ThirdModule", 
                 "example.modules.workers.third.ThirdModuleImpl",
-                ModuleType.PROTOTYPE));
+                ModuleType.SINGLETON));
         
         return modules;
     }

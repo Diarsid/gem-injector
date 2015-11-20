@@ -27,7 +27,7 @@ import java.lang.reflect.Constructor;
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.ModuleMetaData
  * @see     com.drs.gem.injector.core.InjectionPriorityCalculator
- * @see     com.drs.gem.injector.core.Injector
+ * @see     com.drs.gem.injector.core.RecursiveInjector
  */
 class GemInjectorFactory {
 
@@ -35,15 +35,27 @@ class GemInjectorFactory {
     }
     
     /**
-     * Factory method returns new {@link com.drs.gem.injector.core.Injector Injector}
+     * Factory method returns new {@link com.drs.gem.injector.core.RecursiveInjector RecursiveInjector}
      * object. 
      * 
      * @param info  ModulesInfo interface that used to obtain info about modules.
-     * @return      new Injector object.
+     * @return      new RecursiveInjector object.
      * @see         com.drs.gem.injector.core.ModulesInfo
      */
-    Injector buildInjector(ModulesInfo info){
-        return new Injector(info);
+    Injector buildRecursiveInjector(ModulesInfo info){
+        return new RecursiveInjector(info);
+    }
+    
+    /**
+     * Factory method returns new {@link com.drs.gem.injector.core.RecursiveInjector RecursiveInjector}
+     * object. 
+     * 
+     * @param info  ModulesInfo interface that used to obtain info about modules.
+     * @return      new RecursiveInjector object.
+     * @see         com.drs.gem.injector.core.ModulesInfo
+     */
+    Injector buildLoopInjector(ModulesInfo info){
+        return new LoopInjector(info);
     }
     
     /**

@@ -27,6 +27,7 @@ public class Main {
         Declaration secondDec = new SecondDeclaration();
         Container container = Container.buildContainer(firstDec, secondDec);
         
+        //container.useRecursiveInjector();
         container.init();
         
         FifthModule fifthModule = container.getModule(FifthModule.class);
@@ -38,8 +39,11 @@ public class Main {
         
         FirstModule first1 = container.getModule(FirstModule.class);
         FirstModule first2 = container.getModule(FirstModule.class);
+        System.out.println("Modules (dif) equality: " + (first1==first2));
         
-        System.out.println("Modules (equ) equality: " + (first1==first2));
+        ThirdModule third1 = container.getModule(ThirdModule.class);
+        ThirdModule third2 = container.getModule(ThirdModule.class);        
+        System.out.println("Modules (equ) equality: " + (third1==third2));
         
         System.out.println("second Mod in FIFTH (dif) equality: " + 
                 (fifthModule.getSecondModule()==fifthModuleSame.getSecondModule()));

@@ -19,6 +19,7 @@
 package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Map;
 
 import com.drs.gem.injector.module.Module;
@@ -75,4 +76,6 @@ interface ModulesInfo {
      * @see                     com.drs.gem.injector.core.ModulesContainer
      */
     boolean ifConstructorExists(Class moduleInterface);
+    
+    List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface);
 }
