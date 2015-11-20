@@ -15,6 +15,25 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>                
+                <configuration>
+                    <finalName>GemInjector</finalName>
+                    <archive>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                            <!-- <classpathPrefix>lib/</classpathPrefix> -->
+                            <!-- <mainClass>com.drs.beam.starter.ModulesLoader</mainClass> -->
+                        </manifest>
+                    </archive>
+                    <excludes>
+                        <exclude>example/**</exclude>
+                        <exclude>**/*.netbeans_automatic_build</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
                 <configuration>
