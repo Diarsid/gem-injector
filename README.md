@@ -1,4 +1,4 @@
-![gem_injector_logo](http://i.imgur.com/LEmM4lJ.png) 
+![gem_injector_logo](https://github.com/Diarsid/gem-injector/blob/master/docs/logo/Gem-logo-small.png) 
 # Gem Injector 
 
 
