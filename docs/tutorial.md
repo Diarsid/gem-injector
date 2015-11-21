@@ -15,7 +15,7 @@
   * [Module Types](#module-types-arrow_up_small)
   * [Cyclic dependencies](#cyclic-dependencies-arrow_up_small)
 
-[:arrow_backward: Back to README](./../README.md)
+[:arrow_backward: Back to main](https://github.com/Diarsid/gem-injector)
 
 #### Intro and Module concept [:arrow_up_small:](#gem-injector-tutorial)
 
@@ -133,5 +133,5 @@ In order to provide consistent and precise module's behavior and avoid uncertain
 ##### Cyclic dependencies [:arrow_up_small:](#gem-injector-tutorial)
 While developing application situation can arise when some module will depend on other modules and so on, but one of those underlying modules will depend on first module, i.e. chain of dependencies will become cyclic. It is impossible to resolve such endless initializaton loop. Therefore in this case **CyclicDependencyException** will be thrown from **Container**.*init*() method.
 
-[:arrow_backward: Back to README](./../README.md)
+[:arrow_backward: Back to main](https://github.com/Diarsid/gem-injector)
 
