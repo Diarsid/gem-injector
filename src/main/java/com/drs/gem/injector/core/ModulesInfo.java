@@ -46,7 +46,7 @@ interface ModulesInfo {
     boolean isModuleSingleton(Class moduleInterface);
     
     /**
-     * Returns Map<Class, Module> that contains entries where key is module  
+     * Returns Map that contains entries where key is module  
      * interface class object with Module Type SINGLETON and value is 
      * corresponding module instance which is fully initialized and ready 
      * to work.
@@ -58,7 +58,7 @@ interface ModulesInfo {
     
     /**
      * Returns constructor that will be used to instantiate new objects
-     * of specified module or {@link com.drs.gem.injector.core.ModuleBuilder
+     * of specified module or {@link com.drs.gem.injector.module.ModuleBuilder 
      * ModuleBuilder} of specified module.
      * 
      * @param moduleInterface   class object of declared module interface

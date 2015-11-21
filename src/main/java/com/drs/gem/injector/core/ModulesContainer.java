@@ -40,7 +40,7 @@ import com.drs.gem.injector.module.Module;
  * @see com.drs.gem.injector.core.Container
  * @see com.drs.gem.injector.core.ModulesInfo
  */
-public class ModulesContainer implements Container, ModulesInfo {
+class ModulesContainer implements Container, ModulesInfo {
     
     /**
      * Map<Class, Class> contains entries where key is module interface 
