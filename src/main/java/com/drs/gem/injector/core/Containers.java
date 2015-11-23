@@ -19,8 +19,16 @@
 package com.drs.gem.injector.core;
 
 /**
- *
+ * This interface has been planned as connection point of all other 
+ * {@link Container containers} that have been declared in this application.
+ * It can be useful to transmit initialized modules, info about dependencies
+ * or declaration info between different containers.
+ * 
+ * It doesn't have any methods or implementation because I don't have clear
+ * vision of its real functionality and behavior yet.
+ * 
  * @author Diarsid
+ * @see Container
  */
 public interface Containers {
     
