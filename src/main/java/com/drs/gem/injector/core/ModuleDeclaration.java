@@ -26,20 +26,14 @@ import java.util.Objects;
  * to convey necessary information about new module into {@link 
  * com.drs.gem.injector.core.Container Container}.
  * 
- * ModuleDeclaration object can be created via its constructor with 
- * following arguments:
- *     {@link String}: canonical name of module interface;
- *     {@link String}: canonical name of module interface implementation class;
- *     {@link ModuleType}: module type.
- * For example, some module can be declared like this:
- * <code>
  * <pre>
+ * <code>
  * new ModuleDeclaration( 
  *         "my.app.modules.SomeModule",
  *         "my.app.some.package.with.moduleimplem.SomeModuleWorker",
  *         ModuleType.SINGLETON);
- * </pre>
  * </code>
+ * </pre>
  * 
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.Declaration
