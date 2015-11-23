@@ -33,10 +33,12 @@ import java.util.Objects;
  *     {@link ModuleType}: module type.
  * For example, some module can be declared like this:
  * <code>
+ * <pre>
  * new ModuleDeclaration( 
  *         "my.app.modules.SomeModule",
  *         "my.app.some.package.with.moduleimplem.SomeModuleWorker",
  *         ModuleType.SINGLETON);
+ * </pre>
  * </code>
  * 
  * @author  Diarsid

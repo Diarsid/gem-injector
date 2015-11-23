@@ -7,4 +7,6 @@ It is very simple, lightweight and fast Java [Dependency Injection](https://en.w
   :arrow_forward: [Gem injector Tutorial](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial.md)
   
   :arrow_forward: [More about](https://github.com/Diarsid/gem-injector/blob/master/docs/more_about.md)
+  
+  :arrow_forward: [API Documentation](http://diarsid.github.io/gem-injector/apidocs/index.html)
 
