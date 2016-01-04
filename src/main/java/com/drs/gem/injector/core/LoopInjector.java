@@ -20,10 +20,14 @@ package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import com.drs.gem.injector.exceptions.ModuleInstantiationException;
 import com.drs.gem.injector.exceptions.ModuleNotFoundException;
@@ -44,7 +48,7 @@ import com.drs.gem.injector.module.ModuleBuilder;
 class LoopInjector implements Injector {
     
     private final ModulesInfo modulesInfo;
-    private final Map<Class, Module> moduleDependencies;
+    private final Map<Class, Queue<Module>> moduleDependencies;
     private List<ModuleMetaData> moduleDependData;
 
     LoopInjector(ModulesInfo info) {
@@ -69,10 +73,10 @@ class LoopInjector implements Injector {
         
         dependenciesPriorityReverseCheck();
         debug(moduleInterface);
-        collectModuleDependencies();
+        collectModuleDependenciesFor(moduleInterface);
         
         if ( moduleDependencies.containsKey(moduleInterface) ){
-            Module module = moduleDependencies.get(moduleInterface);
+            Module module = moduleDependencies.get(moduleInterface).poll();
             moduleDependencies.clear();
             moduleDependData = null;
             return module;
@@ -80,18 +84,18 @@ class LoopInjector implements Injector {
             throw new ModuleNotFoundException(
                     "Dependency injection algorithm broken in " + 
                     moduleInterface.getCanonicalName() +
-                    " unable to find corresponding module after pependecy " +
+                    ": unable to find corresponding module after dependecy " +
                     "searching process.");
         }        
     }
     
     private void debug(Class module) {
         System.out.println("  [CONTAINER] - begin assembling dependencies for " + module.getSimpleName());
-        System.out.println("  [CONTAINER] - dependencies:");
-        printDepend();
+        //debugPrintDeps();
     }
     
-    private void printDepend() {
+    private void debugPrintDeps() {
+        System.out.println("  [CONTAINER] - dependencies:");
         for (int i = 0; i < moduleDependData.size(); i++) {
             System.out.println("  "+i+" : "+moduleDependData.get(i).getModuleInterface().getSimpleName() + "  <- "+moduleDependData.get(i).getType().toString());
         }
@@ -131,7 +135,8 @@ class LoopInjector implements Injector {
                 }
             }
         }
-        moduleDependData.retainAll(actualized);
+        Collections.sort(actualized);
+        moduleDependData = actualized;
     }
     
     /**
@@ -143,7 +148,7 @@ class LoopInjector implements Injector {
      * 
      * All modules (including the asked one) will be placed in this temporary storage.
      */
-    private void collectModuleDependencies() {
+    private void collectModuleDependenciesFor(Class searchedModule) {
         for ( ModuleMetaData metaData : moduleDependData ){
             
             Module module = null;
@@ -153,8 +158,27 @@ class LoopInjector implements Injector {
                 module = initNewModule(metaData);     
             }
             
-            if ( module != null ) {
-                moduleDependencies.put(metaData.getModuleInterface(), module);
+            boolean found = (module != null);
+            // if module is singleton it is not required to store
+            // it in temporary dependencies storage because it is 
+            // alreday stored in container singletons storage and 
+            // is accessible from there. 
+            boolean isNeeded
+                    = !modulesInfo.isModuleSingleton(metaData.getModuleInterface());
+            // But if this module is the main module searched now by 
+            // this injector, it must be stored.
+            if (metaData.getModuleInterface().equals(searchedModule)) {
+                isNeeded = true;
+            }
+            
+            if ( found && isNeeded ) {
+                if (moduleDependencies.containsKey(metaData.getModuleInterface())) {
+                    moduleDependencies.get(metaData.getModuleInterface()).add(module);
+                } else {
+                    Deque<Module> modules = new ArrayDeque<>();
+                    modules.add(module);
+                    moduleDependencies.put(metaData.getModuleInterface(), modules);
+                }
             }
         }
     }   
@@ -208,16 +232,30 @@ class LoopInjector implements Injector {
         Module[] depModules = new Module[moduleDep.length];
         
         for ( int i = 0; i < moduleDep.length; i++ ) {
-            if ( moduleDependencies.containsKey(moduleDep[i]) ) {
-                depModules[i] = moduleDependencies.get(moduleDep[i]);
+            Class dependency = moduleDep[i];
+            if ( modulesInfo.isModuleSingleton(dependency) ) {
+                if ( modulesInfo.getSingletons().containsKey(dependency) ) {
+                    depModules[i] = modulesInfo.getSingletons().get(dependency);
+                } else {
+                    throw new ModuleNotFoundException(
+                            "Dependency injection algorithm is broken: Module " +
+                            dependency.getCanonicalName() + 
+                            " not found in singleton container's storage during" +
+                            " dependency collection for " + 
+                            metaData.getModuleInterface().getCanonicalName() + " Module.");
+                }
             } else {
-                throw new ModuleNotFoundException(
-                        "Dependency injection algorithm is broken: Module " +
-                        moduleDep[i].getCanonicalName() + 
-                        " not found in temporary modules storage during " +
-                        " dependency collection for " + 
-                        metaData.getModuleInterface().getCanonicalName() + " Module.");
-            }
+                if ( moduleDependencies.containsKey(dependency) ) {
+                    depModules[i] = moduleDependencies.get(dependency).remove();
+                } else {
+                    throw new ModuleNotFoundException(
+                            "Dependency injection algorithm is broken: Module " +
+                            dependency.getCanonicalName() + 
+                            " not found in temporary modules storage during" +
+                            " dependency collection for " + 
+                            metaData.getModuleInterface().getCanonicalName() + " Module.");
+                }   
+            }            
         }
         
         Object obj = instantiateBuildObject(metaData, depModules);

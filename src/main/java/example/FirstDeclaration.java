@@ -29,7 +29,7 @@ class FirstDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.FirstModule", 
                 "example.modules.workers.first.FirstModuleImpl",
-                ModuleType.SINGLETON));
+                ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.SeventhModule", 
@@ -49,17 +49,17 @@ class FirstDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.ThirdModule", 
                 "example.modules.workers.third.ThirdModuleImpl",
-                ModuleType.SINGLETON));
+                ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.FourthModule", 
                 "example.modules.workers.fourth.FourthModuleImpl",
-                ModuleType.PROTOTYPE));
+                ModuleType.SINGLETON));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.FifthModule", 
                 "example.modules.workers.fifth.FifthModuleImpl",
-                ModuleType.SINGLETON));
+                ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.SixthModule", 
