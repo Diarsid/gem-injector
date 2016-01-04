@@ -18,18 +18,90 @@
 
 package com.drs.gem.injector.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.drs.gem.injector.exceptions.NoSuchContainerException;
+
 /**
- * This interface has been planned as connection point of all other 
- * {@link Container containers} that have been declared in this application.
- * It can be useful to transmit initialized modules, info about dependencies
- * or declaration info between different containers.
- * 
- * It doesn't have any methods or implementation because I don't have clear
- * vision of its real functionality and behavior yet.
+ * Interface for handling multiple {@link Container} instances. Stores new containers 
+ * and provides static methods for container creation, removing and obtaining existed 
+ * containers by their names.
  * 
  * @author Diarsid
  * @see Container
  */
 public interface Containers {
     
+    Map<String, Container> containers = new HashMap<>();
+    
+    /**
+     * Returns a new Container instance. It is implied that modules will
+     * be explicitly declared later in container via {@link #declareModule(
+     * java.lang.String, java.lang.String, ModuleType) 
+     * .declareModule().} 
+     * 
+     * @param name  name of this new Container.
+     * @return      new Container instance.
+     */
+    static Container buildContainer(String name) {        
+        GemInjectorFactory factory = new GemInjectorFactory();
+        Container container = new ModulesContainer(factory);
+        containers.put(name, container);
+        return container;
+    }
+    
+    /**
+     * Returns a new Container instance. Accepts array of 
+     * {@link Declaration Declarations} as info about declared modules.
+     * If Container has been initialized in this way, it is not permitted
+     * to use {@link #declareModule(
+     * java.lang.String, java.lang.String, ModuleType) method because 
+     * modules information has been already given by declarations.
+     * 
+     * @param name  name of this new Container.
+     * @param declarations  array of module declarations.
+     * @return              new Container instance.
+     * @see                 Declaration
+     */
+    static Container buildContainer(String name, Declaration... declarations) {
+        GemInjectorFactory factory = new GemInjectorFactory();
+        Container container = new ModulesContainer(factory, declarations);
+        containers.put(name, container);
+        return container;
+    }
+    
+    /**
+     * Returns {@link Container} specified by its name. If name is incorrect or Container 
+     * with such name does not exists, {@link NoSuchContainerException} will be thrown.
+     * 
+     * @param name  name of required module. 
+     * @return      required Container instance, if it exists.
+     */
+    static Container getContainer(String name) {
+        Container container = containers.get(name);
+        if ( container == null ) {
+            throw new NoSuchContainerException(
+                    "Container '" + name + "' does not exist.");
+        } else {
+            return container;
+        }
+    }
+    
+    /**
+     * Removes specified {@link Container} instance.
+     * 
+     * @param name  name of container to be removed.
+     * @return      true if container with this name was removed, false otherwise.
+     */
+    static boolean deleteContainer(String name) {
+        return (containers.remove(name) != null);
+    }
+    
+    /**
+     * Deletes all {@link Container Containers}. 
+     */
+    static void clear() {
+        containers.clear();
+    }
 }

@@ -136,7 +136,7 @@ class RecursiveInjector implements Injector {
                 }
                 foundModules[i] = module;
             } else {
-                Constructor buildCons = modulesInfo.getConstructor(dependencyModule);
+                Constructor buildCons = modulesInfo.getConstructorOfModule(dependencyModule);
                 Module module = newModule(buildCons, dependencyModule);
                 foundModules[i] = module;
             }            

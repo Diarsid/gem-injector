@@ -24,11 +24,12 @@ class FourthModuleImplBuilder implements ModuleBuilder<FourthModule>{
     public FourthModuleImplBuilder(FirstModule first, ThirdModule third) {
         this.third = third;
         this.first = first;        
+        System.out.println("[ 4 MODULE-BUILDER] - constructed.");
     }
     
     @Override 
     public FourthModule buildModule(){
-        System.out.println("   >> Builder.build() in 4!");
+        System.out.println("[ 4 MODULE-BUILDER] - 4 module building...");
         return new FourthModuleImpl(third, first);
     }
 }

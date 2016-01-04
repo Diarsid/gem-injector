@@ -20,6 +20,7 @@ package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,8 @@ class LoopInjector implements Injector {
         moduleDependData = null;
         moduleDependData = modulesInfo.getModuleDependenciesData(moduleInterface);
         
+        dependenciesPriorityReverseCheck();
+        debug(moduleInterface);
         collectModuleDependencies();
         
         if ( moduleDependencies.containsKey(moduleInterface) ){
@@ -80,6 +83,55 @@ class LoopInjector implements Injector {
                     " unable to find corresponding module after pependecy " +
                     "searching process.");
         }        
+    }
+    
+    private void debug(Class module) {
+        System.out.println("  [CONTAINER] - begin assembling dependencies for " + module.getSimpleName());
+        System.out.println("  [CONTAINER] - dependencies:");
+        printDepend();
+    }
+    
+    private void printDepend() {
+        for (int i = 0; i < moduleDependData.size(); i++) {
+            System.out.println("  "+i+" : "+moduleDependData.get(i).getModuleInterface().getSimpleName() + "  <- "+moduleDependData.get(i).getType().toString());
+        }
+    }
+    
+    private void dependenciesPriorityReverseCheck() {
+        List<ModuleMetaData> actualized = new ArrayList<>();
+        actualized.add(moduleDependData.get(moduleDependData.size()-1));
+        for ( int i = 0; i < actualized.size(); i++) {
+            ModuleMetaData module = actualized.get(i);
+            if ( module.getType().equals(ModuleType.PROTOTYPE) ) {
+                /*
+                   * If module is prototype, all its dependencies are 
+                   * required because it will be initialized afresh
+                   * every time. 
+                   */
+                Class[] moduleDepcies = module.getConstructor().getParameterTypes();
+                for (Class moduleDepcy : moduleDepcies) {
+                    actualized.add(modulesInfo.getMetaDataOfModule(moduleDepcy));
+                }
+            } else {
+                /*
+                   * If module is singleton it may not need to obtain, store 
+                   * and initialize its dependencies because singleton may 
+                   * already be initialized and stored in container.
+                   */
+                if ( ! modulesInfo.getSingletons().containsKey(module.getModuleInterface())) {
+                    /*
+                        * If module is singleton and it has not been initialized yet
+                        * is only case when it is needed to obtain and store its
+                        * dependencies.
+                        */
+                    Class[] moduleDepcies = module.getConstructor().getParameterTypes();
+                    for (Class moduleDepcy : moduleDepcies) {
+                        actualized.add(modulesInfo.getMetaDataOfModule(moduleDepcy));
+                    }
+                }
+            }
+        }
+        moduleDependData.retainAll(actualized);
     }
     
     /**

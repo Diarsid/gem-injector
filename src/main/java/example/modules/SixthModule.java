@@ -14,4 +14,6 @@ import com.drs.gem.injector.module.Module;
 public interface SixthModule extends Module {
     
     String getInfo();
+    
+    FourthModule getFourthModule();
 }

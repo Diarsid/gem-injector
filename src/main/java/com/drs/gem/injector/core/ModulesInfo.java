@@ -65,7 +65,7 @@ interface ModulesInfo {
      * @return                  appropriate module constructor
      * @see                     com.drs.gem.injector.core.ModulesContainer
      */
-    Constructor getConstructor(Class moduleInterface);
+    Constructor getConstructorOfModule(Class moduleInterface);
     
     /**
      * Checks if appropriate constructor assigned to specified module exists.
@@ -78,4 +78,6 @@ interface ModulesInfo {
     boolean ifConstructorExists(Class moduleInterface);
     
     List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface);
+    
+    ModuleMetaData getMetaDataOfModule(Class moduleInterface);
 }

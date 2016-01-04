@@ -29,6 +29,16 @@ class FirstDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.FirstModule", 
                 "example.modules.workers.first.FirstModuleImpl",
+                ModuleType.SINGLETON));
+        
+        modules.add(new ModuleDeclaration(
+                "example.modules.SeventhModule", 
+                "example.modules.workers.seventh.SeventhModuleImpl",
+                ModuleType.PROTOTYPE));
+        
+        modules.add(new ModuleDeclaration(
+                "example.modules.EightModule", 
+                "example.modules.workers.eight.EightModuleWorker",
                 ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
@@ -40,6 +50,21 @@ class FirstDeclaration implements Declaration {
                 "example.modules.ThirdModule", 
                 "example.modules.workers.third.ThirdModuleImpl",
                 ModuleType.SINGLETON));
+        
+        modules.add(new ModuleDeclaration(
+                "example.modules.FourthModule", 
+                "example.modules.workers.fourth.FourthModuleImpl",
+                ModuleType.PROTOTYPE));
+        
+        modules.add(new ModuleDeclaration(
+                "example.modules.FifthModule", 
+                "example.modules.workers.fifth.FifthModuleImpl",
+                ModuleType.SINGLETON));
+        
+        modules.add(new ModuleDeclaration(
+                "example.modules.SixthModule", 
+                "example.modules.workers.sixth.SixthModuleImpl",
+                ModuleType.PROTOTYPE));
         
         return modules;
     }

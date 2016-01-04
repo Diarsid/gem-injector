@@ -15,10 +15,12 @@ import example.modules.SecondModule;
 class SecondModuleImpl implements SecondModule {
 
     SecondModuleImpl() {
+        System.out.println("[ 2 MODULE] - constructed.");
     }
     
     @Override
     public String getInfo(){
-        return "begin-in-2!";
+        System.out.println("[ 2 MODULE] - invoked.");
+        return " 222222 ";
     }
 }

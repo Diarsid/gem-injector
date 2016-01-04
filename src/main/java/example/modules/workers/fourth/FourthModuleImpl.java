@@ -22,10 +22,12 @@ class FourthModuleImpl implements FourthModule {
     FourthModuleImpl(ThirdModule third, FirstModule first) {
         this.first = first;
         this.third = third;
+        System.out.println("[ 4 MODULE] - constructed.");
     }    
     
     @Override
     public String getInfo(){
-        return "hi-from-4 " + third.getInfo() + first.getInfo();
+        System.out.println("[ 4 MODULE] - invoked.");
+        return " 44444 " + third.getInfo() + first.getInfo();
     }
 }

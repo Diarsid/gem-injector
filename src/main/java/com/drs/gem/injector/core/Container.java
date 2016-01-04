@@ -33,9 +33,9 @@ public interface Container {
     /**
      * Method to declare new module in container.
      * 
-     * @param moduleInterface   canonical name of declared module interface
-     * @param moduleImplem      canonical name of declared module implementation class
-     * @param type              module's type, SINGLETON or PROTOTYPE
+     * @param moduleInterface   canonical name of declared module interface.
+     * @param moduleImplem      canonical name of declared module implementation class.
+     * @param type              module's type, SINGLETON or PROTOTYPE.
      * @see                     com.drs.gem.injector.core.ModuleType
      */
     void declareModule(String moduleInterface, String moduleImplem, ModuleType type);
@@ -66,31 +66,4 @@ public interface Container {
      * @see                 com.drs.gem.injector.module.Module
      */
     <M extends Module> M getModule(Class<M> moduleClass);
-    
-    /**
-     * Method to get a new Container instance. It is implied that modules will
-     * be explicitly declared later in container via {@link #declareModule(
-     * java.lang.String, java.lang.String, com.drs.gem.injector.core.ModuleType) 
-     * .declareModule().} 
-     * 
-     * @return      new Container instance.
-     */
-    static Container buildContainer(){
-        GemInjectorFactory factory = new GemInjectorFactory();
-        return new ModulesContainer(factory);
-    }
-    
-    /**
-     * Method to get a new Container instance. Accepts array of 
-     * {@link com.drs.gem.injector.core.Declaration Declarations} 
-     * as info about declared modules.
-     * 
-     * @param declarations  array of module declarations.
-     * @return              new Container instance.
-     * @see                 com.drs.gem.injector.core.Declaration
-     */
-    static Container buildContainer(Declaration... declarations){
-        GemInjectorFactory factory = new GemInjectorFactory();
-        return new ModulesContainer(factory, declarations);
-    }
 }

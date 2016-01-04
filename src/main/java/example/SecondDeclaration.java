@@ -29,7 +29,7 @@ public class SecondDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.FourthModule", 
                 "example.modules.workers.fourth.FourthModuleImpl",
-                ModuleType.SINGLETON));
+                ModuleType.PROTOTYPE));
         
         modules.add(new ModuleDeclaration(
                 "example.modules.FifthModule", 
@@ -39,7 +39,7 @@ public class SecondDeclaration implements Declaration {
         modules.add(new ModuleDeclaration(
                 "example.modules.SixthModule", 
                 "example.modules.workers.sixth.SixthModuleImpl",
-                ModuleType.PROTOTYPE));
+                ModuleType.SINGLETON));
         
         return modules;
     }

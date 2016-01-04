@@ -15,10 +15,12 @@ import example.modules.FirstModule;
 class FirstModuleImpl implements FirstModule {
 
     public FirstModuleImpl() {
+        System.out.println("[ 1 MODULE] - constructed.");
     }
     
     @Override
     public String getInfo(){
-        return "begin-in-1!";
+        System.out.println("[ 1 MODULE] - invoked.");
+        return " 11111 ";
     }
 }

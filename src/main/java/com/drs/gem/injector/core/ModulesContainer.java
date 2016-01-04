@@ -89,6 +89,11 @@ class ModulesContainer implements Container, ModulesInfo {
     private List<ModuleMetaData> injectionPriorities;
     
     /**
+     * 
+     */
+    private final Map<Class, ModuleMetaData> moduleDatas;
+    
+    /**
      * TRUE if modules were declared via {@link com.drs.gem.injector.core.Declaration
      * Declaration} objects. FALSE otherwise.
      * 
@@ -131,6 +136,7 @@ class ModulesContainer implements Container, ModulesInfo {
         this.moduleTypes = new HashMap<>();
         this.singletonModules = new HashMap<>();
         this.injectionPriorities = null;
+        this.moduleDatas = new HashMap<>();
         this.constructorDeclaration = false;
         this.useRecursiveInjector = false;
         this.factory = factory;
@@ -143,6 +149,7 @@ class ModulesContainer implements Container, ModulesInfo {
         this.moduleTypes = new HashMap<>();
         this.singletonModules = new HashMap<>();
         this.injectionPriorities = null;
+        this.moduleDatas = new HashMap<>();
         this.constructorDeclaration = true;
         this.useRecursiveInjector = false;
         this.factory = factory;
@@ -233,6 +240,7 @@ class ModulesContainer implements Container, ModulesInfo {
                     "No modules have been declared.");
         }
         collectConstructors();
+        initializeModuleMetaDatas();
         rateModulesByInjectionPriority();
         injectSingletons();
     }    
@@ -255,6 +263,19 @@ class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
+    private void initializeModuleMetaDatas() {
+        for(Map.Entry<Class, Class> pair : declaredModules.entrySet()) {
+            Class moduleInterface = pair.getKey();
+            Constructor buildCons = constructors.get(moduleInterface);
+            ModuleType type = moduleTypes.get(moduleInterface);
+            
+            ModuleMetaData metaData = factory.buildMetaData(
+                    moduleInterface, buildCons, type);
+            
+            moduleDatas.put(moduleInterface, metaData);
+        }
+    }
+    
     /**
      * Creates new {@link com.drs.gem.injector.core.ModuleMetaData 
      * ModuleMetaData} objects, calculates their actual priority using
@@ -265,20 +286,14 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModuleMetaData
      * @see com.drs.gem.injector.core.InjectionPriorityCalculator
      */
-    private void rateModulesByInjectionPriority(){
+    private void rateModulesByInjectionPriority() {
         InjectionPriorityCalculator priorityCalculator = 
                 factory.buildCalculator((ModulesInfo) this);
         List<ModuleMetaData> metaDatas = new ArrayList<>();
         
-        for(Map.Entry<Class, Class> pair : declaredModules.entrySet()){
-            Class moduleInterface = pair.getKey();
-            Constructor buildCons = constructors.get(moduleInterface);
-            ModuleType type = moduleTypes.get(moduleInterface);
-            
-            ModuleMetaData metaData = factory.buildMetaData(
-                    moduleInterface, buildCons, type);
-            int priority = priorityCalculator.calculatePriority(metaData);
-            metaData.setPriority(priority);
+        for(Map.Entry<Class, ModuleMetaData> pair : moduleDatas.entrySet()) {                       
+            ModuleMetaData metaData = pair.getValue();
+            priorityCalculator.calculateAndSetPriority(metaData);
             
             metaDatas.add(metaData);
         }
@@ -357,7 +372,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */    
     @Override
-    public Constructor getConstructor(Class moduleInterface){
+    public Constructor getConstructorOfModule(Class moduleInterface){
         return constructors.get(moduleInterface);
     }
     
@@ -384,14 +399,19 @@ class ModulesContainer implements Container, ModulesInfo {
     }
     
     @Override
-    public List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface){
+    public List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface) {
         for (int i = 0; i < injectionPriorities.size(); i++){
             if(injectionPriorities.get(i).getModuleInterface().equals(moduleInterface)){
-                return injectionPriorities.subList(0, i + 1);
+                return new ArrayList<>(injectionPriorities.subList(0, i + 1));
             }
         }
         throw new UndeclaredDependencyException(
                 "Undeclared dependency: " + moduleInterface.getCanonicalName() + 
                 "not contained in Container.");
+    }
+    
+    @Override
+    public ModuleMetaData getMetaDataOfModule(Class moduleInterface) {
+        return moduleDatas.get(moduleInterface);
     }
 }

@@ -19,10 +19,17 @@ class SixthModuleImpl implements SixthModule {
     
     SixthModuleImpl(FourthModule fourth) {
         this.fourth = fourth;
+        System.out.println("[ 6 MODULE] - constructed.");
     }
     
     @Override
     public String getInfo(){
-        return "Hello-from-6! " + fourth.getInfo();
+        System.out.println("[ 6 MODULE] - invoked.");
+        return " 6666 " + fourth.getInfo();
+    }
+    
+    @Override
+    public FourthModule getFourthModule() {
+        return fourth;
     }
 }

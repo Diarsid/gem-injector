@@ -27,11 +27,12 @@ class FifthModuleImpl implements FifthModule {
         this.second = second;
         this.sixth = sixth;
         this.fourth = fourth;
+        System.out.println("[ 5 MODULE] - constructed.");
     }
     
     @Override
     public void printInfo(){
-        System.out.println("Fifth module says: " + sixth.getInfo());
+        System.out.println(" 55555 " + sixth.getInfo());
     }   
     
     

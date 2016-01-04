@@ -19,8 +19,9 @@
 package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.drs.gem.injector.exceptions.CyclicDependencyException;
 import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
@@ -51,11 +52,12 @@ class InjectionPriorityCalculator {
      * @return      quantity of module dependencies, i.e. its injection priority
      * @see         com.drs.gem.injector.core.ModuleMetaData
      */    
-    int calculatePriority(ModuleMetaData metaData){
+    void calculateAndSetPriority(ModuleMetaData metaData){
         if (metaData.getConstructor().getParameterCount() != 0){
-            return this.calculateFullDependenciesQty(metaData);
+            int qty = calculateFullDependenciesQty(metaData);
+            metaData.setPriority(qty);
         } else {
-            return 0;
+            metaData.setPriority(0);
         }     
     }
     
@@ -77,52 +79,41 @@ class InjectionPriorityCalculator {
      * @return      quantity of module dependencies
      */
     private int calculateFullDependenciesQty(ModuleMetaData metaData){
+        List<Class> dependencies = new ArrayList<>(
+                Arrays.asList(metaData.getConstructor().getParameterTypes()));
         
-        Set<Constructor> dependencies = new HashSet<>();
-        
-        Class[] firstLevelDependencies = metaData.getConstructor().getParameterTypes();
-        for (Class firstLevelDependency : firstLevelDependencies){
-            checkIfDependencyDeclaredAsModule(firstLevelDependency);
-            Constructor dependencyConstr = info.getConstructor(firstLevelDependency);
-            dependencies.add(dependencyConstr);
-        }
-        
-        Set<Constructor> currentLevelDependencies = new HashSet<>(dependencies);
-        Set<Constructor> nextLevelDependencies = new HashSet<>();
-        
-        while( ! currentLevelDependencies.isEmpty()){
-            
-            for (Constructor dependency : currentLevelDependencies){
-                Class[] nestedDependencies = dependency.getParameterTypes();
-                for (Class dependencyClass : nestedDependencies){
-                    checkIfModuleHasCyclicDependencies(
-                            metaData, dependencyClass, dependency.getDeclaringClass());
-                    checkIfDependencyDeclaredAsModule(dependencyClass);
-                    Constructor depCon = info.getConstructor(dependencyClass);
-                    if ( ! dependencies.contains(depCon)){
-                        nextLevelDependencies.add(depCon);
-                    }                        
+        for (int i = 0; i < dependencies.size(); i++) {
+            Class dependency = dependencies.get(i);
+            checkIfDependencyDeclaredAsModule(dependency);
+            checkIfModuleHasCyclicDependencies(
+                    metaData.getModuleInterface(),
+                    dependency, dependency);
+            Constructor dependencyConstructor = 
+                        info.getConstructorOfModule(dependency);
+            for (Class nestedDependency : dependencyConstructor.getParameterTypes()) {
+                checkIfDependencyDeclaredAsModule(nestedDependency);
+                checkIfModuleHasCyclicDependencies(
+                        metaData.getModuleInterface(), 
+                        nestedDependency, 
+                        dependency);
+                if ( ! dependencies.contains(nestedDependency) ) {
+                    dependencies.add(nestedDependency);
                 }
             }
-            
-            currentLevelDependencies.clear();
-            currentLevelDependencies.addAll(nextLevelDependencies);
-            dependencies.addAll(nextLevelDependencies);
-            nextLevelDependencies.clear();
-        } 
+        }
         return dependencies.size();
     }
     
     private void checkIfModuleHasCyclicDependencies(
-            ModuleMetaData metaData, Class dependency, Class declaration){
+            Class moduleInterface, Class dependency, Class declaration){
         
-        if (metaData.getModuleInterface().equals(dependency)){
+        if (moduleInterface.equals(dependency)){
             throw new CyclicDependencyException(
                     "Cyclic dependency detected: " + 
-                    metaData.getModuleInterface().getCanonicalName() + " depend on " +
+                    moduleInterface.getCanonicalName() + " depend on " +
                     declaration.getCanonicalName() + 
                     " which has cyclic dependency on " + 
-                    metaData.getModuleInterface().getCanonicalName());
+                    moduleInterface.getCanonicalName());
         }
     }
     

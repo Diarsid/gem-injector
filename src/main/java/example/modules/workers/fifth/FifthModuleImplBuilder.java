@@ -27,11 +27,12 @@ class FifthModuleImplBuilder implements ModuleBuilder<FifthModule>{
         this.second = second;
         this.sixth = sixth;
         this.fourth = fourth;
+        System.out.println("[ 5 MODULE-BUILDER] - constructed.");
     }    
     
     @Override
     public FifthModule buildModule(){
-        System.out.println("   >> Builder.build() in 5!");
+        System.out.println("[ 5 MODULE-BUILDER] - 5 module building...");
         return new FifthModuleImpl(second, fourth, sixth);
     }
 }

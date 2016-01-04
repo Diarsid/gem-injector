@@ -22,10 +22,12 @@ class ThirdModuleImpl implements ThirdModule {
     ThirdModuleImpl(FirstModule first, SecondModule second) {
         this.first = first;
         this.second = second;
+        System.out.println("[ 3 MODULE] - constructed.");
     }
     
     @Override
     public String getInfo(){
-        return "great-from-3 " + first.getInfo() + second.getInfo();
+        System.out.println("[ 3 MODULE] - invoked.");
+        return " 33333 " + first.getInfo() + second.getInfo();
     }
 }

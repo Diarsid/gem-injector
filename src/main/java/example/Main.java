@@ -8,12 +8,10 @@ package example;
 
 import com.drs.gem.injector.core.Declaration;
 import com.drs.gem.injector.core.Container;
+import com.drs.gem.injector.core.Containers;
 
 import example.modules.FifthModule;
-import example.modules.FirstModule;
-import example.modules.SecondModule;
 import example.modules.SixthModule;
-import example.modules.ThirdModule;
 
 /**
  *
@@ -23,46 +21,34 @@ public class Main {
     
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        Declaration firstDec = new FirstDeclaration();
-        Declaration secondDec = new SecondDeclaration();
-        Container container = Container.buildContainer(firstDec, secondDec);
+        Declaration firstDec = new FirstDeclaration();        
+        Container container = Containers.buildContainer("main", firstDec);
+        System.out.println("[MAIN] - Container created.");
         
-        //container.useRecursiveInjector();
-        container.init();
+        //useRecursiveInjector();
+        System.out.println("[MAIN] - Container initialization...");
+        Containers.getContainer("main").init();
+        System.out.println("[MAIN] - Container initialized.");
+        System.out.println();
         
-        FifthModule fifthModule = container.getModule(FifthModule.class);
-        fifthModule.printInfo();
+        System.out.println("[MAIN] - 5 module obtaining...");
+        FifthModule fifth = Containers.getContainer("main").getModule(FifthModule.class);
+        System.out.println();
         
-        FifthModule fifthModuleSame = container.getModule(FifthModule.class);
-                
-        System.out.println("Modules (dif) equality: " + (fifthModule==fifthModuleSame));
+        System.out.println("[MAIN] - 6 module obtaining...");
+        SixthModule sixth = Containers.getContainer("main").getModule(SixthModule.class);
         
-        FirstModule first1 = container.getModule(FirstModule.class);
-        FirstModule first2 = container.getModule(FirstModule.class);
-        System.out.println("Modules (dif) equality: " + (first1==first2));
-        
-        ThirdModule third1 = container.getModule(ThirdModule.class);
-        ThirdModule third2 = container.getModule(ThirdModule.class);        
-        System.out.println("Modules (equ) equality: " + (third1==third2));
-        
-        System.out.println("second Mod in FIFTH (dif) equality: " + 
-                (fifthModule.getSecondModule()==fifthModuleSame.getSecondModule()));
-        System.out.println("fourth Mod in FIFTH (equ) equality: " + 
-                (fifthModule.getFourthModule()==fifthModuleSame.getFourthModule()));
-        System.out.println("sixth Mod in FIFTH (dif) equality: " + 
-                (fifthModule.getSixthModule()==fifthModuleSame.getSixthModule()));
-        
-        SecondModule second = container.getModule(SecondModule.class);
-        System.out.println(second.getInfo());
-        ThirdModule third = container.getModule(ThirdModule.class);
-        System.out.println(third.getInfo());
-        SixthModule sixth = container.getModule(SixthModule.class);
-        System.out.println(sixth.getInfo());
+        boolean equ = (sixth.getFourthModule() == fifth.getFourthModule());
+        System.out.println("fourth module equality: "+equ);
         long stop = System.currentTimeMillis();
-        
         System.out.println("");
         System.out.println("time spent: " + (stop - start));
         
+    }
+    
+    static void useRecursiveInjector(){
+        Containers.getContainer("main").useRecursiveInjector();
+        System.out.println("[MAIN] - Recursive injector is used.");
     }
 
 }
