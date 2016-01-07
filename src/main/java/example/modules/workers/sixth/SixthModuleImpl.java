@@ -6,6 +6,8 @@
 
 package example.modules.workers.sixth;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.FourthModule;
 import example.modules.SixthModule;
 
@@ -16,7 +18,12 @@ import example.modules.SixthModule;
 class SixthModuleImpl implements SixthModule {
     
     private final FourthModule fourth;
+
+    public SixthModuleImpl() {
+        this.fourth = null;
+    }    
     
+    @InjectedConstructor
     SixthModuleImpl(FourthModule fourth) {
         this.fourth = fourth;
         System.out.println("[ 6 MODULE] - constructed.");

@@ -18,9 +18,9 @@
 
 package com.drs.gem.injector.exceptions;
 
-public class InvalidModuleInterfaceException extends RuntimeException {
+public class InvalidModuleBuilderImplementationException extends RuntimeException {
 
-    public InvalidModuleInterfaceException(String message){
+    public InvalidModuleBuilderImplementationException(String message) {
         super(message);
-    }
+    }    
 }

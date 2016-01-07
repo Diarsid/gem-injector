@@ -6,6 +6,7 @@
 
 package example.modules.workers.fourth;
 
+import com.drs.gem.injector.module.InjectedConstructor;
 import com.drs.gem.injector.module.ModuleBuilder;
 
 import example.modules.FirstModule;
@@ -20,7 +21,12 @@ class FourthModuleImplBuilder implements ModuleBuilder<FourthModule>{
     
     private ThirdModule third;
     private FirstModule first;
+    
+    FourthModuleImplBuilder(FirstModule firstModule) {
+        this.first = firstModule;
+    }
 
+    @InjectedConstructor
     public FourthModuleImplBuilder(FirstModule first, ThirdModule third) {
         this.third = third;
         this.first = first;        

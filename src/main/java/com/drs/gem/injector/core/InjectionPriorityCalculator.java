@@ -27,9 +27,8 @@ import com.drs.gem.injector.exceptions.CyclicDependencyException;
 import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
 
 /**
- * Class is responsible for calculation of module's real dependencies 
- * quantity. See detailed description in {@link 
- * com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}.
+ * Class calculates quantity of module's real dependencies. 
+ * See detailed description in {@link ModuleMetaData}.
  * 
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.ModuleMetaData

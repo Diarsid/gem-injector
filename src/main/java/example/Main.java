@@ -8,7 +8,7 @@ package example;
 
 import com.drs.gem.injector.core.Declaration;
 import com.drs.gem.injector.core.Container;
-import com.drs.gem.injector.core.Containers;
+import com.drs.gem.injector.core.Gem;
 
 import example.modules.FifthModule;
 import example.modules.SixthModule;
@@ -22,21 +22,21 @@ public class Main {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         Declaration firstDec = new FirstDeclaration();        
-        Container container = Containers.buildContainer("main", firstDec);
+        Container container = Gem.buildContainer("main", firstDec);
         System.out.println("[MAIN] - Container created.");
         
         //useRecursiveInjector();
         System.out.println("[MAIN] - Container initialization...");
-        Containers.getContainer("main").init();
+        Gem.getContainer("main").init();
         System.out.println("[MAIN] - Container initialized.");
         System.out.println();
         
         System.out.println("[MAIN] - 5 module obtaining...");
-        FifthModule fifth = Containers.getContainer("main").getModule(FifthModule.class);
+        FifthModule fifth = Gem.getContainer("main").getModule(FifthModule.class);
         System.out.println();
         
         System.out.println("[MAIN] - 6 module obtaining...");
-        SixthModule sixth = Containers.getContainer("main").getModule(SixthModule.class);
+        SixthModule sixth = Gem.getContainer("main").getModule(SixthModule.class);
         
         boolean equ = (sixth.getFourthModule() == fifth.getFourthModule());
         System.out.println("fourth module equality: "+equ);
@@ -47,7 +47,7 @@ public class Main {
     }
     
     static void useRecursiveInjector(){
-        Containers.getContainer("main").useRecursiveInjector();
+        Gem.getContainer("main").useRecursiveInjector();
         System.out.println("[MAIN] - Recursive injector is used.");
     }
 

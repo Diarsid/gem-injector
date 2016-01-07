@@ -18,6 +18,8 @@
 
 package example.modules.workers.seventh;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.SeventhModule;
 
 /**
@@ -26,6 +28,10 @@ import example.modules.SeventhModule;
  */
 class SeventhModuleImpl implements SeventhModule {
     
+    SeventhModuleImpl(String arg) {
+    }
+    
+    @InjectedConstructor
     SeventhModuleImpl() {
         System.out.println("[ 7 MODULE] - constructed.");
     }

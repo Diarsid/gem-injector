@@ -21,8 +21,7 @@ package com.drs.gem.injector.core;
 import java.lang.reflect.Constructor;
 
 /**
- * Simple factory which is responsible for instantiation of
- * new objects that are required by demand in other classes.
+ * Simple factory which for instantiation of new objects required in other classes.
  * 
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.ModuleMetaData
@@ -55,7 +54,7 @@ class GemInjectorFactory {
      * @see         com.drs.gem.injector.core.ModulesInfo
      */
     Injector buildLoopInjector(ModulesInfo info){
-        return new LoopInjector(info);
+        return new PriorityLoopInjector(info);
     }
     
     /**

@@ -18,6 +18,8 @@
 
 package example.modules.workers.eight;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.EightModule;
 
 /**
@@ -26,6 +28,7 @@ import example.modules.EightModule;
  */
 class EightModuleWorker implements EightModule {
     
+    @InjectedConstructor
     EightModuleWorker() {
         System.out.println("[ 8 MODULE] - constructed.");
     }

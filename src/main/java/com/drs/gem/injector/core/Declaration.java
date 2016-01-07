@@ -20,9 +20,36 @@ package com.drs.gem.injector.core;
 import java.util.Set;
 
 /**
- * Interface that could be used for modules declaration as alternative way to
+ * Interface that can be used for modules declaration as alternative way to
  * {@link com.drs.gem.injector.core.Container#declareModule(java.lang.String, 
- * java.lang.String, com.drs.gem.injector.core.ModuleType) Container.declareModule(). }
+ * java.lang.String, com.drs.gem.injector.core.ModuleType) Container.declareModule()}.
+ * 
+ * It may look like this:
+ * 
+ * <pre><code>
+ * class MyDeclaration implements Declaration {
+ *
+ *    MyDeclaration() {
+ *    }
+ *   
+ *    &#64;Override
+ *    public Set&#60;ModuleDeclaration&#62; getDeclaredModules(){
+ *        Set&#60;ModuleDeclaration&#62; modules = new HashSet&#60;&#62;();
+ *       
+ *        modules.add(new ModuleDeclaration(
+ *                "example.modules.FirstModule", 
+ *                "example.modules.workers.first.FirstModuleImpl",
+ *                ModuleType.PROTOTYPE));
+ *        
+ *        modules.add(new ModuleDeclaration(
+ *                "example.modules.SecondModule", 
+ *                "example.modules.workers.second.SecondModuleImpl",
+ *                ModuleType.SINGLETON));
+ *        
+ *        return modules;
+ *    }    
+ * }
+ * </code></pre>
  * 
  * @author Diarsid
  */

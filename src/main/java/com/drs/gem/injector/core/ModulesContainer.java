@@ -184,7 +184,7 @@ class ModulesContainer implements Container, ModulesInfo {
                     " implementation. Explicit module declaration via" +
                     " Modules::declareModule(String, String) is not allowed.");
         }
-        if ( ! singletonModules.isEmpty()){
+        if ( injectionPriorities != null ){
             throw new ForbiddenModuleDeclarationException(
                     "Modules has been initialized already. Additional module " +
                     "declaration is not allowed after initialization.");
@@ -255,9 +255,7 @@ class ModulesContainer implements Container, ModulesInfo {
             Class moduleBuildClass = pair.getValue();
             
             Constructor[] moduleConss = moduleBuildClass.getDeclaredConstructors();            
-            helper.verifyIfModuleHasOneConstructor(moduleConss);
-            
-            Constructor moduleCon = moduleConss[0];
+            Constructor moduleCon = helper.resolveModuleConstructors(moduleConss);
             moduleCon.setAccessible(true);
             constructors.put(moduleInterface, moduleCon);
         }
@@ -308,7 +306,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * 
      * @see com.drs.gem.injector.core.ModuleMetaData
      */
-    private void injectSingletons(){
+    private void injectSingletons() {
         Injector injector = getInjector();
         for (ModuleMetaData metaData : injectionPriorities){
             if (metaData.getType().equals(ModuleType.SINGLETON)){
@@ -321,7 +319,7 @@ class ModulesContainer implements Container, ModulesInfo {
         }
     }
     
-    private Injector getInjector(){
+    private Injector getInjector() {
         if ( useRecursiveInjector ) {
             return factory.buildRecursiveInjector((ModulesInfo) this);
         } else {
@@ -336,8 +334,8 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.Container
      */ 
     @Override
-    public <M extends Module> M getModule(Class<M> moduleInterface){      
-        if ( injectionPriorities == null ){
+    public <M extends Module> M getModule(Class<M> moduleInterface) {      
+        if ( injectionPriorities == null ) {
             throw new ContainerInitializationException(
                     "Modules::init() was not invoked.");
         }
@@ -361,7 +359,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */
     @Override
-    public boolean isModuleSingleton(Class moduleInterface){
+    public boolean isModuleSingleton(Class moduleInterface) {
         return (moduleTypes.get(moduleInterface).equals(ModuleType.SINGLETON));
     }
     
@@ -372,7 +370,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */    
     @Override
-    public Constructor getConstructorOfModule(Class moduleInterface){
+    public Constructor getConstructorOfModule(Class moduleInterface) {
         return constructors.get(moduleInterface);
     }
     
@@ -383,7 +381,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */
     @Override
-    public boolean ifConstructorExists(Class moduleInterface){
+    public boolean ifConstructorExists(Class moduleInterface) {
         return constructors.containsKey(moduleInterface);
     }
     
@@ -394,13 +392,13 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */
     @Override
-    public Map<Class, Module> getSingletons(){
+    public Map<Class, Module> getSingletons() {
         return singletonModules;
     }
     
     @Override
     public List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface) {
-        for (int i = 0; i < injectionPriorities.size(); i++){
+        for (int i = 0; i < injectionPriorities.size(); i++) {
             if(injectionPriorities.get(i).getModuleInterface().equals(moduleInterface)){
                 return new ArrayList<>(injectionPriorities.subList(0, i + 1));
             }

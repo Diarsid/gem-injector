@@ -6,6 +6,7 @@
 
 package example.modules.workers.fifth;
 
+import com.drs.gem.injector.module.InjectedConstructor;
 import com.drs.gem.injector.module.ModuleBuilder;
 
 import example.modules.FifthModule;
@@ -23,6 +24,7 @@ class FifthModuleImplBuilder implements ModuleBuilder<FifthModule>{
     private SixthModule sixth;
     private FourthModule fourth;
 
+    @InjectedConstructor
     FifthModuleImplBuilder(SecondModule second, SixthModule sixth, FourthModule fourth) {
         this.second = second;
         this.sixth = sixth;

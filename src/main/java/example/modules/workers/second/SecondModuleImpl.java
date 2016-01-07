@@ -6,6 +6,8 @@
 
 package example.modules.workers.second;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.SecondModule;
 
 /**
@@ -13,7 +15,14 @@ import example.modules.SecondModule;
  * @author Diarsid
  */
 class SecondModuleImpl implements SecondModule {
+    
+    SecondModuleImpl(String arg) {
+    }
+    
+    SecondModuleImpl(String arg, int x) {
+    }
 
+    @InjectedConstructor
     SecondModuleImpl() {
         System.out.println("[ 2 MODULE] - constructed.");
     }

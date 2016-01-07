@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Diarsid
+ * Copyright (C) 2016 Diarsid
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,15 +17,24 @@
  */
 package com.drs.gem.injector.module;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Marker interface to define concrete interfaces as modules to use them 
- * within a container. To become module in the sense of this container 
- * and to become available for processing in container any interface that 
- * has been designed as module has to extend this interface.
+ * Annotation for marking module constructor whose parameters will be treated as
+ * set of module dependencies. This constructor will be used by Container to
+ * inject collected dependencies and initialize module.
+ * Container will resolve only those dependencies that have been declared in
+ * constructor marked with this annotation.
+ * 
+ * It is not permitted to mark more than one constructor in module class with
+ * this annotation.
  * 
  * @author Diarsid
- * @see com.drs.gem.injector.core.Container
  */
-public interface Module {
-    
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.CONSTRUCTOR)
+public @interface InjectedConstructor {    
 }

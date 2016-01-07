@@ -6,6 +6,8 @@
 
 package example.modules.workers.third;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.FirstModule;
 import example.modules.SecondModule;
 import example.modules.ThirdModule;
@@ -19,6 +21,17 @@ class ThirdModuleImpl implements ThirdModule {
     private final FirstModule first;
     private final SecondModule second;
 
+    public ThirdModuleImpl() {
+        this.first = null;
+        this.second = null;
+    }
+    
+    public ThirdModuleImpl(FirstModule first) {
+        this.first = first;
+        this.second = null;
+    }
+    
+    @InjectedConstructor
     ThirdModuleImpl(FirstModule first, SecondModule second) {
         this.first = first;
         this.second = second;

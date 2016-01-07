@@ -27,12 +27,12 @@ import java.util.Objects;
  * com.drs.gem.injector.core.Container Container}.
  * 
  * <pre>
- * <code>
+ * {@code 
  * new ModuleDeclaration( 
  *         "my.app.modules.SomeModule",
  *         "my.app.some.package.with.moduleimplem.SomeModuleWorker",
  *         ModuleType.SINGLETON);
- * </code>
+ * }
  * </pre>
  * 
  * @author  Diarsid

@@ -35,7 +35,7 @@ import com.drs.gem.injector.module.Module;
 import com.drs.gem.injector.module.ModuleBuilder;
 
 /**
- * LoopInjector implements {@link com.drs.gem.injector.core.Injector
+ * PriorityLoopInjector implements {@link com.drs.gem.injector.core.Injector
  * Injector} interface and is responsible for procedure of module object 
  * creation using Constructor of every module and search of its dependencies.
  * 
@@ -45,13 +45,13 @@ import com.drs.gem.injector.module.ModuleBuilder;
  * 
  * @author Diarsid
  */
-class LoopInjector implements Injector {
+class PriorityLoopInjector implements Injector {
     
     private final ModulesInfo modulesInfo;
     private final Map<Class, Queue<Module>> moduleDependencies;
     private List<ModuleMetaData> moduleDependData;
 
-    LoopInjector(ModulesInfo info) {
+    PriorityLoopInjector(ModulesInfo info) {
         this.modulesInfo = info;
         this.moduleDependencies = new HashMap<>();
         this.moduleDependData = null;

@@ -6,6 +6,8 @@
 
 package example.modules.workers.first;
 
+import com.drs.gem.injector.module.InjectedConstructor;
+
 import example.modules.FirstModule;
 
 /**
@@ -13,7 +15,12 @@ import example.modules.FirstModule;
  * @author Diarsid
  */
 class FirstModuleImpl implements FirstModule {
+    
+    public FirstModuleImpl(String arg) {
+        // nothing
+    }
 
+    @InjectedConstructor
     public FirstModuleImpl() {
         System.out.println("[ 1 MODULE] - constructed.");
     }

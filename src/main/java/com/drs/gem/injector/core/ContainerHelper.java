@@ -20,10 +20,10 @@ package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
 
-import com.drs.gem.injector.exceptions.InvalidBuilderDeclarationException;
+import com.drs.gem.injector.exceptions.InvalidModuleBuilderImplementationException;
 import com.drs.gem.injector.exceptions.InvalidModuleImplementationException;
-import com.drs.gem.injector.exceptions.InvalidModuleInterfaceException;
 import com.drs.gem.injector.exceptions.ModuleDeclarationException;
+import com.drs.gem.injector.module.InjectedConstructor;
 import com.drs.gem.injector.module.Module;
 import com.drs.gem.injector.module.ModuleBuilder;
 
@@ -42,10 +42,10 @@ class ContainerHelper {
      * com.drs.gem.injector.module.ModuleBuilder ModuleBuilder} class
      * in its package. If it doesn't returns null.
      * 
-     * @param moduleImplemName  module implementation class canonical name
+     * @param moduleImplemName  module implementation class canonical name.
      * @return                  Class of ModuleBuilder or null if specified 
      *                          module doesn't have one.
-     * @see                     com.drs.gem.injector.module.ModuleBuilder
+     * @see                     com.drs.gem.injector.module.ModuleBuilder.
      */
     Class ifModuleHasBuilder(String moduleImplemName){
         String moduleBuilderName = moduleImplemName + "Builder";
@@ -58,16 +58,15 @@ class ContainerHelper {
     }
     
     /**
-     * Check if given class actually implement {link@ 
+     * Checks if given class actually implements {link@ 
      * com.drs.gem.injector.module.ModuleBuilder ModuleBuilder} interface.
      * 
-     * @param builderClass  class to check if it is actual implementation 
-     *                      of ModuleBuilder interface
-     * @see                 com.drs.gem.injector.module.ModuleBuilder
+     * @param builderClass  class that must be checked if it implements ModuleBuilder interface.
+     * @see                 com.drs.gem.injector.module.ModuleBuilder.
      */
     void verifyModuleBuilder(Class builderClass){
         if ( ! ModuleBuilder.class.isAssignableFrom(builderClass) ){
-            throw new InvalidBuilderDeclarationException(
+            throw new InvalidModuleBuilderImplementationException(
                     "Invalid module builder implementation: " + 
                     builderClass.getCanonicalName() + 
                     "does not implement " + 
@@ -76,32 +75,32 @@ class ContainerHelper {
     }
     
     /**
-     * Verify that given class is actually is interface and is subinterface 
-     * of {@link com.drs.gem.injector.module.Module Module} interface.
-     * @param moduleInterface   class to verify if it is interface and extends 
-     *                          Module interface
-     * @see                     com.drs.gem.injector.module.Module
+     * Verifies that given class is interface and it extends 
+     * {@link com.drs.gem.injector.module.Module Module} interface.
+     * @param moduleInterface   class that should be verified if it is interface and extends 
+     *                          Module interface.
+     * @see                     com.drs.gem.injector.module.Module.
      */
     void verifyModuleInterface(Class moduleInterface){
         if ( ! moduleInterface.isInterface()){
             throw new ModuleDeclarationException(
-                    "Incorrect module declaration: class " + 
+                    "Invalid module declaration: class " + 
                     moduleInterface.getCanonicalName() +
                     " is not interface.");
         } else if ( ! Module.class.isAssignableFrom(moduleInterface)){
-            throw new InvalidModuleInterfaceException(
-                    "Invalid Module interface: " + 
+            throw new InvalidModuleImplementationException(
+                    "Invalid module interface: " + 
                     moduleInterface.getCanonicalName() + 
                     " does not implement " + Module.class.getCanonicalName() + ".");
         }
     }
     
     /**
-     * Verify if specified module implementation class actually implement
+     * Verifies if specified module implementation class actually implements
      * specified module interface.
      * 
-     * @param moduleInterface   module interface which given class should implement
-     * @param moduleImplem      module implementation class that should be verified
+     * @param moduleInterface   module interface which given class should implement.
+     * @param moduleImplem      module implementation class that should be verified.
      */
     void verifyModuleImplementation(Class moduleInterface, Class moduleImplem){
         if ( ! moduleInterface.isAssignableFrom(moduleImplem)){
@@ -116,8 +115,8 @@ class ContainerHelper {
     /**
      * Returns module class by its canonical name or throws an exception.
      * 
-     * @param className module canonical class name
-     * @return          module actual class
+     * @param className module canonical class name.
+     * @return          module actual class.
      */
     Class getClassByName(String className){
         Class classImpl;
@@ -126,30 +125,64 @@ class ContainerHelper {
             return classImpl;
         } catch (ClassNotFoundException e){
             throw new ModuleDeclarationException(
-                    "Incorrect module declaration: class " +
+                    "Invalid module declaration: class " +
                     className + " does not exist.");
         }
     }
     
     /**
-     * Verifies that constructors array argument has actually only one 
-     * constructor. Otherwise an exception will be thrown.
+     * Finds correct constructor among all constructors in the class. Constructor that
+     * will be used for dependency injection must be marked with {@link 
+     * InjectedConstructor} annotation. Module or ModuleBuilder class should have
+     * only one constructor with this annotation otherwise an exception will be thrown.
      * 
-     * @param constructors constructors array to verify that it has only one object
+     * @param constructors  constructors array that should be checked if it has only one object.
+     * @return              constructor of processed module.
      */
-    void verifyIfModuleHasOneConstructor(Constructor... constructors){
-        if (constructors.length != 1){
+    Constructor resolveModuleConstructors(Constructor... constructors){
+        Constructor required = null;
+        int annotatedConstrQty = 0;
+        for (Constructor constr : constructors) {
+            if ( constr.getAnnotation(InjectedConstructor.class) != null ) {
+                required = constr;
+                annotatedConstrQty++;
+            }
+        }
+        
+        if ( annotatedConstrQty == 1 ) {
+            return required;
+        } else {            
             Class moduleBuildClass = constructors[0].getDeclaringClass();
-            if (moduleBuildClass.getSimpleName().contains("ModuleBuilder")){
-                throw new InvalidBuilderDeclarationException(
-                        "Invalid module builder implementation: " + 
-                        moduleBuildClass.getCanonicalName() + 
-                        " has more than one declared constructor.");
+            boolean isBuilder = ModuleBuilder.class.isAssignableFrom(moduleBuildClass);
+            
+            if (isBuilder) {
+                if ( annotatedConstrQty == 0 ) {
+                    throw new InvalidModuleBuilderImplementationException(
+                            "Invalid module builder implementation: " + 
+                            moduleBuildClass.getCanonicalName() + 
+                            " has no one constructor annotated with " +
+                            "@InjectedConstructor annotation.");
+                } else {
+                    throw new InvalidModuleBuilderImplementationException(
+                            "Invalid module builder implementation: " + 
+                            moduleBuildClass.getCanonicalName() + 
+                            " has more than one constructor annotated with " +
+                            "@InjectedConstructor annotation.");
+                }
             } else {
-                throw new InvalidModuleImplementationException(
-                        "Invalid module implementation: " + 
-                        moduleBuildClass.getCanonicalName() + 
-                        " has more than one declared constructor.");
+                if ( annotatedConstrQty == 0 ) {
+                    throw new InvalidModuleImplementationException(
+                            "Invalid module implementation: " + 
+                            moduleBuildClass.getCanonicalName() + 
+                            " has no one constructor annotated with " +
+                            "@InjectedConstructor annotation.");
+                } else {
+                    throw new InvalidModuleImplementationException(
+                            "Invalid module implementation: " + 
+                            moduleBuildClass.getCanonicalName() + 
+                            " has more than one constructor annotated with " +
+                            "@InjectedConstructor annotation.");
+                }
             }
         }
     }

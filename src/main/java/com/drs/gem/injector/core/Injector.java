@@ -23,27 +23,60 @@ import com.drs.gem.injector.module.Module;
 
 /**
  * Interface represents object which is responsible for immediate object 
- * initialization and resolving object's dependencies.
+ * initialization, searching and injecting object's dependencies.
  * 
- * There are two implementations of this interface {@link
- * com.drs.gem.injector.core.RecursiveInjector RecursiveInjector} and {@link 
- * com.drs.gem.injector.core.LoopInjector LoopInjector}.
+ * There are two implementations of this interface {@link RecursiveInjector} 
+ * and {@link PriorityLoopInjector}.
  * 
- * RecursiveInjector uses recursive method invocations to collect dependencies 
- * and instantiate module object while LoopInjector uses loop with a lot of  
- * if-else branching and temporary dependencies storage collections to perform 
- * similar operations.
+ * RecursiveInjector uses recursive method invocations to collect, initialize 
+ * and inject all required dependencies of specified module. It looks for 
+ * dependencies from module constructor parameters, get constructors of those
+ * parameters and recursively repeat until all dependencies will be found
+ * and algorithm reaches all modules without any dependencies. In fact, 
+ * RecursiveInjector walks through the dependency graph from the required module
+ * which acts as entry node. It walks through the graph until it will find all nodes 
+ * that are reachable from entry node and stops when all such nodes-dependencies will 
+ * be found. When node without its own dependencies is found, it is initialized and stored.
+ * Then method returns recursively to previous recursive method invocation steps where  
+ * it can initialize higher-level modules using existed already initialized lower-level 
+ * modules. It returns from recursive invocation stack frame by frame until it will 
+ * return to entry node of all recursive call, which is required module. At that
+ * moment all required lower-level modules are initialized and collected therefore
+ * searched module can be instantiated and injected with its dependencies.
  * 
- * For more implementation details see appropriate classes.
+ * PriorityLoopInjector has another work concept. During container initialization
+ * process all modules are evaluated on how much real dependency they actually
+ * have.
+ * This process looks like the process of walking through the dependency graph 
+ * in RecursiveInjector, but there aren't any module initializations during this 
+ * passage through the graph. It only counts the quantity of nodes in dependencies
+ * graph of every module existing in this container.
+ * When real dependencies number of each module have been counted, Injector ranks 
+ * all modules by their priority where priority is number of module calculated
+ * dependencies. 
+ * When it is required to assemble any module with X priority, PriorityLoopInjector 
+ * obtains from container the list of all modules having priorities in range
+ * from 0 to X-1. Then PriorityLoopInjector checks if there are modules in this
+ * list that are not actually required for main module assembling process and sweep
+ * them out. Then injector begins initializing modules one by one according to their
+ * priority in ascending order and saving them. This approach ensures that when 
+ * some module is to be initialized, all other modules that module
+ * needs are already initialized because they have lower priority.
+ * Injector continues assembling and storing initialized modules while it 
+ * reaches the end of the list where the main module is located. Then injector 
+ * assembles main module, returns it and stop its work.
+ * 
+ * For more implementation details see comments in appropriate Injector 
+ * implementation classes.
  * 
  * @author Diarsid
  * @see com.drs.gem.injector.core.RecursiveInjector
- * @see com.drs.gem.injector.core.LoopInjector
+ * @see com.drs.gem.injector.core.PriorityLoopInjector
  */
-public interface Injector {
+interface Injector {
     
     /**
-     * Creates new module object and finds all required dependencies for it.
+     * Creates new object of specified module class.
      * 
      * @param   buildCons       appropriate module Constructor. It can be 
      *                          also constructor of module builder.

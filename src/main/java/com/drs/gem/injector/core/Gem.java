@@ -20,31 +20,39 @@ package com.drs.gem.injector.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import com.drs.gem.injector.exceptions.ContainerInitializationException;
 import com.drs.gem.injector.exceptions.NoSuchContainerException;
 
 /**
- * Interface for handling multiple {@link Container} instances. Stores new containers 
+ * Class for handling multiple {@link Container} instances. Stores new containers 
  * and provides static methods for container creation, removing and obtaining existed 
  * containers by their names.
  * 
  * @author Diarsid
  * @see Container
  */
-public interface Containers {
+public final class Gem {
     
-    Map<String, Container> containers = new HashMap<>();
+    private final static Map<String, Container> containers = new HashMap<>();
+    
+    private Gem() {}
     
     /**
      * Returns a new Container instance. It is implied that modules will
-     * be explicitly declared later in container via {@link #declareModule(
-     * java.lang.String, java.lang.String, ModuleType) 
-     * .declareModule().} 
+     * be explicitly declared later in container via 
+     * {@link Container#declareModule(String, String, ModuleType) .declareModule()}.
      * 
      * @param name  name of this new Container.
      * @return      new Container instance.
      */
-    static Container buildContainer(String name) {        
+    public final static Container buildContainer(String name) {
+        if (containers.containsKey(name)) {
+            throw new ContainerInitializationException(
+                    "Container with name '" + 
+                    name + "' already exists.");
+        } 
         GemInjectorFactory factory = new GemInjectorFactory();
         Container container = new ModulesContainer(factory);
         containers.put(name, container);
@@ -55,16 +63,21 @@ public interface Containers {
      * Returns a new Container instance. Accepts array of 
      * {@link Declaration Declarations} as info about declared modules.
      * If Container has been initialized in this way, it is not permitted
-     * to use {@link #declareModule(
-     * java.lang.String, java.lang.String, ModuleType) method because 
-     * modules information has been already given by declarations.
+     * to use {@link Container#declareModule(String, String, ModuleType) .declareModule()} 
+     * method because modules information has been already given by 
+     * these Declarations.
      * 
-     * @param name  name of this new Container.
+     * @param name          name of this new Container.
      * @param declarations  array of module declarations.
      * @return              new Container instance.
      * @see                 Declaration
      */
-    static Container buildContainer(String name, Declaration... declarations) {
+    public final static Container buildContainer(String name, Declaration... declarations) {
+        if (containers.containsKey(name)) {
+            throw new ContainerInitializationException(
+                    "Container with name '" + 
+                    name + "' already exists.");
+        }
         GemInjectorFactory factory = new GemInjectorFactory();
         Container container = new ModulesContainer(factory, declarations);
         containers.put(name, container);
@@ -78,7 +91,7 @@ public interface Containers {
      * @param name  name of required module. 
      * @return      required Container instance, if it exists.
      */
-    static Container getContainer(String name) {
+    public final static Container getContainer(String name) {
         Container container = containers.get(name);
         if ( container == null ) {
             throw new NoSuchContainerException(
@@ -94,14 +107,24 @@ public interface Containers {
      * @param name  name of container to be removed.
      * @return      true if container with this name was removed, false otherwise.
      */
-    static boolean deleteContainer(String name) {
+    public final static boolean removeContainer(String name) {
         return (containers.remove(name) != null);
     }
     
     /**
-     * Deletes all {@link Container Containers}. 
+     * Deletes all existed {@link Container Containers}.
      */
-    static void clear() {
+    public final static void clear() {
         containers.clear();
+    }
+    
+    /**
+     * Returns {@link Set} including names of all existed 
+     * {@link Container Containers}.
+     * 
+     * @return  names of all existed {@link Container Containers}.
+     */
+    public final static Set<String> getAllContainerNames() {
+        return containers.keySet();
     }
 }
