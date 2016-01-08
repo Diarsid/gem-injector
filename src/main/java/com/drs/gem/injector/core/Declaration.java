@@ -22,7 +22,7 @@ import java.util.Set;
 /**
  * Interface that can be used for modules declaration as alternative way to
  * {@link com.drs.gem.injector.core.Container#declareModule(java.lang.String, 
- * java.lang.String, com.drs.gem.injector.core.ModuleType) Container.declareModule()}.
+ * java.lang.String, com.drs.gem.injector.core.GemModuleType) Container.declareModule()}.
  * 
  * It may look like this:
  * 
@@ -33,37 +33,37 @@ import java.util.Set;
  *    }
  *   
  *    &#64;Override
- *    public Set&#60;ModuleDeclaration&#62; getDeclaredModules(){
- *        Set&#60;ModuleDeclaration&#62; modules = new HashSet&#60;&#62;();
- *       
- *        modules.add(new ModuleDeclaration(
- *                "example.modules.FirstModule", 
- *                "example.modules.workers.first.FirstModuleImpl",
- *                ModuleType.PROTOTYPE));
- *        
- *        modules.add(new ModuleDeclaration(
- *                "example.modules.SecondModule", 
- *                "example.modules.workers.second.SecondModuleImpl",
- *                ModuleType.SINGLETON));
- *        
- *        return modules;
- *    }    
- * }
- * </code></pre>
+ *    public Set&#60;GemModuleDeclaration&#62; getDeclaredModules(){
+ *        Set&#60;GemModuleDeclaration&#62; modules = new HashSet&#60;&#62;();
+       
+        modules.add(new GemModuleDeclaration(
+                "example.modules.FirstModule", 
+                "example.modules.workers.first.FirstModuleImpl",
+                ModuleType.PROTOTYPE));
+        
+        modules.add(new GemModuleDeclaration(
+                "example.modules.SecondModule", 
+                "example.modules.workers.second.SecondModuleImpl",
+                ModuleType.SINGLETON));
+        
+        return modules;
+    }    
+ }
+ </code></pre>
  * 
  * @author Diarsid
  */
 public interface Declaration {
     
     /**
-     * Returns set of {@link com.drs.gem.injector.core.ModuleDeclaration 
-     * ModuleDeclaration} objects. Each object describes one declared module 
+     * Returns set of {@link com.drs.gem.injector.core.GemModuleDeclaration 
+     * GemModuleDeclaration} objects. Each object describes one declared module 
      * that should be processed by appropriate 
      * {@link com.drs.gem.injector.core.Container Container} instance.
      * 
-     * @return  set of ModuleDeclaration objects.
+     * @return  set of GemModuleDeclaration objects.
      * @see     com.drs.gem.injector.core.Container
-     * @see     com.drs.gem.injector.core.ModuleDeclaration
+     * @see     com.drs.gem.injector.core.GemModuleDeclaration
      */
-    Set<ModuleDeclaration> getDeclaredModules();
+    Set<GemModuleDeclaration> getDeclaredModules();
 }

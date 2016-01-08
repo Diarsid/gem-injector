@@ -56,7 +56,10 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
                 <configuration>              
-                    <excludePackageNames>example*</excludePackageNames>         
+                    <excludePackageNames>example*</excludePackageNames>   
+                    <reportOutputDirectory>./site</reportOutputDirectory>
+                    <destDir>api</destDir> 
+                    <stylesheetfile>src/javadoc_custom/css/gem-injector-stylesheet.css</stylesheetfile>     
                 </configuration>
             </plugin>
             <plugin>

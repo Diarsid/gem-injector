@@ -33,16 +33,23 @@ import com.drs.gem.injector.exceptions.NoSuchContainerException;
  * @author Diarsid
  * @see Container
  */
-public final class Gem {
+public final class GemInjector {
     
     private final static Map<String, Container> containers = new HashMap<>();
     
-    private Gem() {}
+    private GemInjector() {}
     
     /**
-     * Returns a new Container instance. It is implied that modules will
+     * <p>
+     * Returns a new {@link Container} instance. In order to begin using it, 
+     * it is necessary to declare modules that will be used in this 
+     * container.</p>
+     * <p>
+     * Modules in container instance can be declared in three ways.
+     * 
+     * It is implied that modules will
      * be explicitly declared later in container via 
-     * {@link Container#declareModule(String, String, ModuleType) .declareModule()}.
+     * {@link Container#declareModule(String, String, GemModuleType) .declareModule()}.
      * 
      * @param name  name of this new Container.
      * @return      new Container instance.
@@ -53,7 +60,7 @@ public final class Gem {
                     "Container with name '" + 
                     name + "' already exists.");
         } 
-        GemInjectorFactory factory = new GemInjectorFactory();
+        Factory factory = new Factory();
         Container container = new ModulesContainer(factory);
         containers.put(name, container);
         return container;
@@ -63,7 +70,7 @@ public final class Gem {
      * Returns a new Container instance. Accepts array of 
      * {@link Declaration Declarations} as info about declared modules.
      * If Container has been initialized in this way, it is not permitted
-     * to use {@link Container#declareModule(String, String, ModuleType) .declareModule()} 
+     * to use {@link Container#declareModule(String, String, GemModuleType) .declareModule()} 
      * method because modules information has been already given by 
      * these Declarations.
      * 
@@ -78,7 +85,7 @@ public final class Gem {
                     "Container with name '" + 
                     name + "' already exists.");
         }
-        GemInjectorFactory factory = new GemInjectorFactory();
+        Factory factory = new Factory();
         Container container = new ModulesContainer(factory, declarations);
         containers.put(name, container);
         return container;

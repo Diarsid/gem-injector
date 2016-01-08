@@ -22,7 +22,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  * Interface that hides {@link com.drs.gem.injector.core.ModulesContainer 
@@ -47,14 +47,14 @@ interface ModulesInfo {
     
     /**
      * Returns Map that contains entries where key is module  
-     * interface class object with Module Type SINGLETON and value is 
-     * corresponding module instance which is fully initialized and ready 
-     * to work.
+ interface class object with GemModule Type SINGLETON and value is 
+ corresponding module instance which is fully initialized and ready 
+ to work.
      * 
      * @return  all initialized singletons declared in this container
      * @see     com.drs.gem.injector.core.ModulesContainer
      */
-    Map<Class, Module> getSingletons();
+    Map<Class, GemModule> getSingletons();
     
     /**
      * Returns constructor that will be used to instantiate new objects

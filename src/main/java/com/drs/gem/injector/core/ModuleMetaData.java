@@ -19,6 +19,7 @@
 package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Objects;
 
 import com.drs.gem.injector.exceptions.DependencyCalculationException;
@@ -51,10 +52,11 @@ class ModuleMetaData implements Comparable<ModuleMetaData>{
     
     private final Class moduleInterface;
     private final Constructor moduleConstructor;
-    private final ModuleType type;
+    private final GemModuleType type;
+    private List<ModuleMetaData> actualDeps;
     private int priority;
     
-    ModuleMetaData(Class moduleInterface, Constructor cons, ModuleType type){        
+    ModuleMetaData(Class moduleInterface, Constructor cons, GemModuleType type){        
         this.moduleInterface = moduleInterface;
         this.moduleConstructor = cons;
         this.type = type;
@@ -69,7 +71,7 @@ class ModuleMetaData implements Comparable<ModuleMetaData>{
         return moduleInterface;
     }
     
-    ModuleType getType(){
+    GemModuleType getType(){
         return type;
     }
     
@@ -86,6 +88,14 @@ class ModuleMetaData implements Comparable<ModuleMetaData>{
      */
     void setPriority(int priority){
         this.priority = priority;
+    }
+    
+    void setActualDependencies(List<ModuleMetaData> actualDatas) {
+        this.actualDeps = actualDatas;
+    }
+    
+    List<ModuleMetaData> getDependencies() {
+        return this.actualDeps;
     }
         
     private void checkIfDependenciesIsCalculated(){

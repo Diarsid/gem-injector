@@ -26,6 +26,6 @@ package com.drs.gem.injector.module;
  * @author Diarsid
  * @see com.drs.gem.injector.core.Container
  */
-public interface Module {
+public interface GemModule {
     
 }

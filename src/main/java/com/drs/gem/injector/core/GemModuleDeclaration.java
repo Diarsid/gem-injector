@@ -28,22 +28,22 @@ import java.util.Objects;
  * 
  * <pre>
  * {@code 
- * new ModuleDeclaration( 
- *         "my.app.modules.SomeModule",
- *         "my.app.some.package.with.moduleimplem.SomeModuleWorker",
- *         ModuleType.SINGLETON);
- * }
+ * new GemModuleDeclaration( 
+         "my.app.modules.SomeModule",
+         "my.app.some.package.with.moduleimplem.SomeModuleWorker",
+         GemModuleType.SINGLETON);
+ }
  * </pre>
  * 
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.Declaration
  * @see     com.drs.gem.injector.core.Container
  */
-public final class ModuleDeclaration {
+public final class GemModuleDeclaration {
     
     private final String moduleInterfaceName;
     private final String moduleBuildClassName;
-    private final ModuleType moduleType;
+    private final GemModuleType moduleType;
 
     /**
      * ModuleDeclaration constructor.
@@ -52,7 +52,7 @@ public final class ModuleDeclaration {
      * @param moduleBuildClass  canonical name of module interface implementation class
      * @param type              module type
      */
-    public ModuleDeclaration(String moduleName, String moduleBuildClass, ModuleType type) {
+    public GemModuleDeclaration(String moduleName, String moduleBuildClass, GemModuleType type) {
         this.moduleInterfaceName = moduleName;
         this.moduleBuildClassName = moduleBuildClass;
         this.moduleType = type;
@@ -66,7 +66,7 @@ public final class ModuleDeclaration {
         return moduleBuildClassName;
     }
 
-    public ModuleType getModuleType() {
+    public GemModuleType getModuleType() {
         return moduleType;
     }
 
@@ -87,7 +87,7 @@ public final class ModuleDeclaration {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ModuleDeclaration other = (ModuleDeclaration) obj;
+        final GemModuleDeclaration other = (GemModuleDeclaration) obj;
         if (!Objects.equals(this.moduleInterfaceName, other.moduleInterfaceName)) {
             return false;
         }

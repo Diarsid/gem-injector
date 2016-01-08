@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.drs.gem.injector.core.Declaration;
-import com.drs.gem.injector.core.ModuleDeclaration;
-import com.drs.gem.injector.core.ModuleType;
+import com.drs.gem.injector.core.GemModuleDeclaration;
+import com.drs.gem.injector.core.GemModuleType;
 
 /**
  *
@@ -23,23 +23,23 @@ public class SecondDeclaration implements Declaration {
     }
     
     @Override
-    public Set<ModuleDeclaration> getDeclaredModules(){
-        Set<ModuleDeclaration> modules = new HashSet<>();
+    public Set<GemModuleDeclaration> getDeclaredModules(){
+        Set<GemModuleDeclaration> modules = new HashSet<>();
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.FourthModule", 
                 "example.modules.workers.fourth.FourthModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.FifthModule", 
                 "example.modules.workers.fifth.FifthModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.SixthModule", 
                 "example.modules.workers.sixth.SixthModuleImpl",
-                ModuleType.SINGLETON));
+                GemModuleType.SINGLETON));
         
         return modules;
     }

@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.drs.gem.injector.core.Declaration;
-import com.drs.gem.injector.core.ModuleDeclaration;
-import com.drs.gem.injector.core.ModuleType;
+import com.drs.gem.injector.core.GemModuleDeclaration;
+import com.drs.gem.injector.core.GemModuleType;
 
 /**
  *
@@ -23,48 +23,48 @@ class FirstDeclaration implements Declaration {
     }
     
     @Override
-    public Set<ModuleDeclaration> getDeclaredModules(){
-        Set<ModuleDeclaration> modules = new HashSet<>();
+    public Set<GemModuleDeclaration> getDeclaredModules(){
+        Set<GemModuleDeclaration> modules = new HashSet<>();
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.FirstModule", 
                 "example.modules.workers.first.FirstModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.SINGLETON));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.SeventhModule", 
                 "example.modules.workers.seventh.SeventhModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.EightModule", 
                 "example.modules.workers.eight.EightModuleWorker",
-                ModuleType.PROTOTYPE));
+                GemModuleType.SINGLETON));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.SecondModule", 
                 "example.modules.workers.second.SecondModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.ThirdModule", 
                 "example.modules.workers.third.ThirdModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.FourthModule", 
                 "example.modules.workers.fourth.FourthModuleImpl",
-                ModuleType.SINGLETON));
+                GemModuleType.SINGLETON));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.FifthModule", 
                 "example.modules.workers.fifth.FifthModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.PROTOTYPE));
         
-        modules.add(new ModuleDeclaration(
+        modules.add(new GemModuleDeclaration(
                 "example.modules.SixthModule", 
                 "example.modules.workers.sixth.SixthModuleImpl",
-                ModuleType.PROTOTYPE));
+                GemModuleType.SINGLETON));
         
         return modules;
     }

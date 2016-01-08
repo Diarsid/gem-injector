@@ -19,7 +19,7 @@ package com.drs.gem.injector.core;
 
 import java.lang.reflect.Constructor;
 
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  * Interface represents object which is responsible for immediate object 
@@ -83,5 +83,5 @@ interface Injector {
      * @param   moduleInterface class object of module interface
      * @return                  module object
      */
-    Module newModule(Constructor buildCons, Class moduleInterface);
+    GemModule newModule(Constructor buildCons, Class moduleInterface);
 }

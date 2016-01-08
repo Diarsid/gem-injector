@@ -5,13 +5,13 @@
  */
 package example.modules;
 
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  *
  * @author Diarsid
  */
-public interface FifthModule extends Module {
+public interface FifthModule extends GemModule {
     void printInfo();
     
     SixthModule getSixthModule();

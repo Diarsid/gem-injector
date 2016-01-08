@@ -24,8 +24,8 @@ import com.drs.gem.injector.exceptions.InvalidModuleBuilderImplementationExcepti
 import com.drs.gem.injector.exceptions.InvalidModuleImplementationException;
 import com.drs.gem.injector.exceptions.ModuleDeclarationException;
 import com.drs.gem.injector.module.InjectedConstructor;
-import com.drs.gem.injector.module.Module;
-import com.drs.gem.injector.module.ModuleBuilder;
+import com.drs.gem.injector.module.GemModule;
+import com.drs.gem.injector.module.GemModuleBuilder;
 
 /**
  * Contains methods for module verification and other helper methods.
@@ -39,12 +39,12 @@ class ContainerHelper {
     
     /**
      * Determines if given module has appropriate {link@ 
-     * com.drs.gem.injector.module.ModuleBuilder ModuleBuilder} class
-     * in its package. If it doesn't returns null.
+ com.drs.gem.injector.module.GemModuleBuilder GemModuleBuilder} class
+ in its package. If it doesn't returns null.
      * 
      * @param moduleImplemName  module implementation class canonical name.
-     * @return                  Class of ModuleBuilder or null if specified 
-     *                          module doesn't have one.
+     * @return                  Class of GemModuleBuilder or null if specified 
+                          module doesn't have one.
      * @see                     com.drs.gem.injector.module.ModuleBuilder.
      */
     Class ifModuleHasBuilder(String moduleImplemName){
@@ -59,26 +59,26 @@ class ContainerHelper {
     
     /**
      * Checks if given class actually implements {link@ 
-     * com.drs.gem.injector.module.ModuleBuilder ModuleBuilder} interface.
+ com.drs.gem.injector.module.GemModuleBuilder GemModuleBuilder} interface.
      * 
-     * @param builderClass  class that must be checked if it implements ModuleBuilder interface.
+     * @param builderClass  class that must be checked if it implements GemModuleBuilder interface.
      * @see                 com.drs.gem.injector.module.ModuleBuilder.
      */
     void verifyModuleBuilder(Class builderClass){
-        if ( ! ModuleBuilder.class.isAssignableFrom(builderClass) ){
+        if ( ! GemModuleBuilder.class.isAssignableFrom(builderClass) ){
             throw new InvalidModuleBuilderImplementationException(
                     "Invalid module builder implementation: " + 
                     builderClass.getCanonicalName() + 
                     "does not implement " + 
-                    ModuleBuilder.class.getCanonicalName());
+                    GemModuleBuilder.class.getCanonicalName());
         }
     }
     
     /**
      * Verifies that given class is interface and it extends 
-     * {@link com.drs.gem.injector.module.Module Module} interface.
+     * {@link com.drs.gem.injector.module.GemModule GemModule} interface.
      * @param moduleInterface   class that should be verified if it is interface and extends 
-     *                          Module interface.
+                          GemModule interface.
      * @see                     com.drs.gem.injector.module.Module.
      */
     void verifyModuleInterface(Class moduleInterface){
@@ -87,11 +87,11 @@ class ContainerHelper {
                     "Invalid module declaration: class " + 
                     moduleInterface.getCanonicalName() +
                     " is not interface.");
-        } else if ( ! Module.class.isAssignableFrom(moduleInterface)){
+        } else if ( ! GemModule.class.isAssignableFrom(moduleInterface)){
             throw new InvalidModuleImplementationException(
                     "Invalid module interface: " + 
                     moduleInterface.getCanonicalName() + 
-                    " does not implement " + Module.class.getCanonicalName() + ".");
+                    " does not implement " + GemModule.class.getCanonicalName() + ".");
         }
     }
     
@@ -133,8 +133,8 @@ class ContainerHelper {
     /**
      * Finds correct constructor among all constructors in the class. Constructor that
      * will be used for dependency injection must be marked with {@link 
-     * InjectedConstructor} annotation. Module or ModuleBuilder class should have
-     * only one constructor with this annotation otherwise an exception will be thrown.
+     * InjectedConstructor} annotation. GemModule or GemModuleBuilder class should have
+ only one constructor with this annotation otherwise an exception will be thrown.
      * 
      * @param constructors  constructors array that should be checked if it has only one object.
      * @return              constructor of processed module.
@@ -153,7 +153,7 @@ class ContainerHelper {
             return required;
         } else {            
             Class moduleBuildClass = constructors[0].getDeclaringClass();
-            boolean isBuilder = ModuleBuilder.class.isAssignableFrom(moduleBuildClass);
+            boolean isBuilder = GemModuleBuilder.class.isAssignableFrom(moduleBuildClass);
             
             if (isBuilder) {
                 if ( annotatedConstrQty == 0 ) {

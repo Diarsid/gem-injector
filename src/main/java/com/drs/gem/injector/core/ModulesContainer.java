@@ -29,7 +29,7 @@ import com.drs.gem.injector.exceptions.ContainerInitializationException;
 import com.drs.gem.injector.exceptions.ForbiddenModuleDeclarationException;
 import com.drs.gem.injector.exceptions.ModuleDeclarationException;
 import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  * Pivotal class represents container itself. Receives information about
@@ -63,20 +63,20 @@ class ModulesContainer implements Container, ModulesInfo {
     private final Map<Class, Constructor> constructors;
     
     /**
-     * Map<Class, ModuleType> contains entries where key is module interface 
+     * Map<Class, GemModuleType> contains entries where key is module interface 
      * class object and value is {@link 
-     * com.drs.gem.injector.core.ModuleType ModuleType} object.
+     * com.drs.gem.injector.core.GemModuleType GemModuleType} object.
      * 
-     * @see com.drs.gem.injector.core.ModuleType
+     * @see com.drs.gem.injector.core.GemModuleType
      */
-    private final Map<Class, ModuleType> moduleTypes;
+    private final Map<Class, GemModuleType> moduleTypes;
     
     /**
-     * Map<Class, Module> contains entries where key is module interface 
-     * class object with Module Type SINGLETON and value is corresponding
-     * module instance which is fully initialized and ready to work.
+     * Map<Class, GemModule> contains entries where key is module interface 
+ class object with GemModule Type SINGLETON and value is corresponding
+ module instance which is fully initialized and ready to work.
      */
-    private final Map<Class, Module> singletonModules;
+    private final Map<Class, GemModule> singletonModules;
     
     /**
      * List<ModuleMetaData> that contains ModuleMetaData 
@@ -105,9 +105,9 @@ class ModulesContainer implements Container, ModulesInfo {
      * Simple factory object is used to avoid "new" operator inside 
      * the container instance methods.
      * 
-     * @see com.drs.gem.injector.core.GemInjectorFactory
+     * @see com.drs.gem.injector.core.Factory
      */
-    private final GemInjectorFactory factory;
+    private final Factory factory;
     
     /**
      * Object contains helper methods to verify module interfaces, 
@@ -130,7 +130,7 @@ class ModulesContainer implements Container, ModulesInfo {
     
     
 
-    ModulesContainer(GemInjectorFactory factory) {
+    ModulesContainer(Factory factory) {
         this.declaredModules = new HashMap<>();
         this.constructors = new HashMap<>();
         this.moduleTypes = new HashMap<>();
@@ -143,7 +143,7 @@ class ModulesContainer implements Container, ModulesInfo {
         this.helper = factory.buildHelper();
     }
     
-    ModulesContainer(GemInjectorFactory factory, Declaration... declarations) {
+    ModulesContainer(Factory factory, Declaration... declarations) {
         this.declaredModules = new HashMap<>();
         this.constructors = new HashMap<>();
         this.moduleTypes = new HashMap<>();
@@ -159,10 +159,10 @@ class ModulesContainer implements Container, ModulesInfo {
     
     private void processDeclarations(Declaration[] declarations){
         for (Declaration dec : declarations){
-            for (ModuleDeclaration moduleDec : dec.getDeclaredModules()){
+            for (GemModuleDeclaration moduleDec : dec.getDeclaredModules()){
                 String moduleInterface = moduleDec.getModuleInterfaceName();
                 String moduleBuildClass = moduleDec.getModuleBuildClassName();
-                ModuleType type = moduleDec.getModuleType();
+                GemModuleType type = moduleDec.getModuleType();
                 parseModuleDeclaration(moduleInterface, moduleBuildClass, type);
             }            
         }
@@ -176,7 +176,7 @@ class ModulesContainer implements Container, ModulesInfo {
      */    
     @Override
     public void declareModule(
-            String moduleInterfaceName, String moduleImplemName, ModuleType type){
+            String moduleInterfaceName, String moduleImplemName, GemModuleType type){
         if (constructorDeclaration){
             throw new ForbiddenModuleDeclarationException(
                     "This container use constructor module declaration via " +
@@ -201,7 +201,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @param type                  module type singleton or prototype
      */
     private void parseModuleDeclaration(
-            String moduleInterfaceName, String moduleImplemName, ModuleType type){
+            String moduleInterfaceName, String moduleImplemName, GemModuleType type){
         
         Class moduleInterface = helper.getClassByName(moduleInterfaceName);
         Class moduleBuildClass = helper.getClassByName(moduleImplemName);        
@@ -265,7 +265,7 @@ class ModulesContainer implements Container, ModulesInfo {
         for(Map.Entry<Class, Class> pair : declaredModules.entrySet()) {
             Class moduleInterface = pair.getKey();
             Constructor buildCons = constructors.get(moduleInterface);
-            ModuleType type = moduleTypes.get(moduleInterface);
+            GemModuleType type = moduleTypes.get(moduleInterface);
             
             ModuleMetaData metaData = factory.buildMetaData(
                     moduleInterface, buildCons, type);
@@ -309,11 +309,11 @@ class ModulesContainer implements Container, ModulesInfo {
     private void injectSingletons() {
         Injector injector = getInjector();
         for (ModuleMetaData metaData : injectionPriorities){
-            if (metaData.getType().equals(ModuleType.SINGLETON)){
+            if (metaData.getType().equals(GemModuleType.SINGLETON)){
                 Constructor buildCons = metaData.getConstructor();        
                 Class moduleInterface = metaData.getModuleInterface();
                 
-                Module module = injector.newModule(buildCons, moduleInterface);
+                GemModule module = injector.newModule(buildCons, moduleInterface);
                 singletonModules.put(moduleInterface, module);
             }
         }
@@ -334,19 +334,19 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.Container
      */ 
     @Override
-    public <M extends Module> M getModule(Class<M> moduleInterface) {      
+    public <M extends GemModule> M getModule(Class<M> moduleInterface) {      
         if ( injectionPriorities == null ) {
             throw new ContainerInitializationException(
                     "Modules::init() was not invoked.");
         }
         if (isModuleSingleton(moduleInterface)){
-            Module uncastedModule = singletonModules.get(moduleInterface);
+            GemModule uncastedModule = singletonModules.get(moduleInterface);
             M module = moduleInterface.cast(uncastedModule);
             return module;
         } else {
             Injector injector = getInjector();
             Constructor buildCons = constructors.get(moduleInterface);
-            Module uncastedModule = injector.newModule(buildCons, moduleInterface);
+            GemModule uncastedModule = injector.newModule(buildCons, moduleInterface);
             M module = moduleInterface.cast(uncastedModule);
             return module;
         }
@@ -360,7 +360,7 @@ class ModulesContainer implements Container, ModulesInfo {
      */
     @Override
     public boolean isModuleSingleton(Class moduleInterface) {
-        return (moduleTypes.get(moduleInterface).equals(ModuleType.SINGLETON));
+        return (moduleTypes.get(moduleInterface).equals(GemModuleType.SINGLETON));
     }
     
     /**
@@ -392,7 +392,7 @@ class ModulesContainer implements Container, ModulesInfo {
      * @see com.drs.gem.injector.core.ModulesInfo
      */
     @Override
-    public Map<Class, Module> getSingletons() {
+    public Map<Class, GemModule> getSingletons() {
         return singletonModules;
     }
     

@@ -8,10 +8,11 @@ package example;
 
 import com.drs.gem.injector.core.Declaration;
 import com.drs.gem.injector.core.Container;
-import com.drs.gem.injector.core.Gem;
+import com.drs.gem.injector.core.GemInjector;
 
 import example.modules.FifthModule;
 import example.modules.SixthModule;
+import example.modules.ThirdModule;
 
 /**
  *
@@ -22,32 +23,42 @@ public class Main {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         Declaration firstDec = new FirstDeclaration();        
-        Container container = Gem.buildContainer("main", firstDec);
+        Container container = GemInjector.buildContainer("main", firstDec);
         System.out.println("[MAIN] - Container created.");
         
         //useRecursiveInjector();
         System.out.println("[MAIN] - Container initialization...");
-        Gem.getContainer("main").init();
+        long startInit = System.currentTimeMillis();
+        GemInjector.getContainer("main").init();
+        long stopInit = System.currentTimeMillis();
         System.out.println("[MAIN] - Container initialized.");
         System.out.println();
         
         System.out.println("[MAIN] - 5 module obtaining...");
-        FifthModule fifth = Gem.getContainer("main").getModule(FifthModule.class);
+        FifthModule fifth = GemInjector.getContainer("main").getModule(FifthModule.class);
         System.out.println();
         
         System.out.println("[MAIN] - 6 module obtaining...");
-        SixthModule sixth = Gem.getContainer("main").getModule(SixthModule.class);
+        SixthModule sixth = GemInjector.getContainer("main").getModule(SixthModule.class);
         
         boolean equ = (sixth.getFourthModule() == fifth.getFourthModule());
         System.out.println("fourth module equality: "+equ);
+        
+        ThirdModule third1 = GemInjector.getContainer("main").getModule(ThirdModule.class);
+        ThirdModule third2 = GemInjector.getContainer("main").getModule(ThirdModule.class);
+        ThirdModule third3 = GemInjector.getContainer("main").getModule(ThirdModule.class);
+        ThirdModule third4 = GemInjector.getContainer("main").getModule(ThirdModule.class);
+        FifthModule fifth2 = GemInjector.getContainer("main").getModule(FifthModule.class);
+        
         long stop = System.currentTimeMillis();
         System.out.println("");
-        System.out.println("time spent: " + (stop - start));
+        System.out.println("[MAIN] container init time : " + (stopInit - startInit));
+        System.out.println("[MAIN] total time : " + (stop - start));
         
     }
     
     static void useRecursiveInjector(){
-        Gem.getContainer("main").useRecursiveInjector();
+        GemInjector.getContainer("main").useRecursiveInjector();
         System.out.println("[MAIN] - Recursive injector is used.");
     }
 

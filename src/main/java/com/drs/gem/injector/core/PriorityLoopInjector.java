@@ -31,8 +31,8 @@ import java.util.Queue;
 
 import com.drs.gem.injector.exceptions.ModuleInstantiationException;
 import com.drs.gem.injector.exceptions.ModuleNotFoundException;
-import com.drs.gem.injector.module.Module;
-import com.drs.gem.injector.module.ModuleBuilder;
+import com.drs.gem.injector.module.GemModule;
+import com.drs.gem.injector.module.GemModuleBuilder;
 
 /**
  * PriorityLoopInjector implements {@link com.drs.gem.injector.core.Injector
@@ -48,13 +48,18 @@ import com.drs.gem.injector.module.ModuleBuilder;
 class PriorityLoopInjector implements Injector {
     
     private final ModulesInfo modulesInfo;
-    private final Map<Class, Queue<Module>> moduleDependencies;
-    private List<ModuleMetaData> moduleDependData;
+    private final Map<Class, Queue<GemModule>> assembledDepcyMods;
+    private List<ModuleMetaData> declaredDepciesDatas;
 
     PriorityLoopInjector(ModulesInfo info) {
         this.modulesInfo = info;
-        this.moduleDependencies = new HashMap<>();
-        this.moduleDependData = null;
+        this.assembledDepcyMods = new HashMap<>();
+        this.declaredDepciesDatas = null;
+    }
+    
+    private void clearInjector() {
+        assembledDepcyMods.clear();
+        declaredDepciesDatas = null;
     }
     
     /**
@@ -66,68 +71,56 @@ class PriorityLoopInjector implements Injector {
      * @return                  module object
      */
     @Override
-    public Module newModule(Constructor buildCons, Class moduleInterface) {        
-        moduleDependencies.clear();
-        moduleDependData = null;
-        moduleDependData = modulesInfo.getModuleDependenciesData(moduleInterface);
-        
-        dependenciesPriorityReverseCheck();
-        debug(moduleInterface);
+    public GemModule newModule(Constructor buildCons, Class moduleInterface) {        
+        clearInjector();
+        getActualDependenciesOf(moduleInterface);
         collectModuleDependenciesFor(moduleInterface);
         
-        if ( moduleDependencies.containsKey(moduleInterface) ){
-            Module module = moduleDependencies.get(moduleInterface).poll();
-            moduleDependencies.clear();
-            moduleDependData = null;
+        if ( assembledDepcyMods.containsKey(moduleInterface) ){
+            GemModule module = assembledDepcyMods.get(moduleInterface).poll();
+            clearInjector();
             return module;
         } else {
+            clearInjector();
             throw new ModuleNotFoundException(
                     "Dependency injection algorithm broken in " + 
                     moduleInterface.getCanonicalName() +
                     ": unable to find corresponding module after dependecy " +
                     "searching process.");
         }        
-    }
+    } 
     
-    private void debug(Class module) {
-        System.out.println("  [CONTAINER] - begin assembling dependencies for " + module.getSimpleName());
-        //debugPrintDeps();
-    }
-    
-    private void debugPrintDeps() {
-        System.out.println("  [CONTAINER] - dependencies:");
-        for (int i = 0; i < moduleDependData.size(); i++) {
-            System.out.println("  "+i+" : "+moduleDependData.get(i).getModuleInterface().getSimpleName() + "  <- "+moduleDependData.get(i).getType().toString());
-        }
+    private void getActualDependenciesOf(Class moduleInterface) {
+        if (modulesInfo.getMetaDataOfModule(moduleInterface).getDependencies() != null) {
+            declaredDepciesDatas = modulesInfo.getMetaDataOfModule(moduleInterface).getDependencies();            
+        } else {
+            declaredDepciesDatas = modulesInfo.getModuleDependenciesData(moduleInterface);
+            dependenciesPriorityReverseCheck();
+            modulesInfo.getMetaDataOfModule(moduleInterface).setActualDependencies(declaredDepciesDatas);            
+        } 
     }
     
     private void dependenciesPriorityReverseCheck() {
         List<ModuleMetaData> actualized = new ArrayList<>();
-        actualized.add(moduleDependData.get(moduleDependData.size()-1));
+        actualized.add(declaredDepciesDatas.get(declaredDepciesDatas.size()-1));
         for ( int i = 0; i < actualized.size(); i++) {
             ModuleMetaData module = actualized.get(i);
-            if ( module.getType().equals(ModuleType.PROTOTYPE) ) {
-                /*
-                   * If module is prototype, all its dependencies are 
-                   * required because it will be initialized afresh
-                   * every time. 
-                   */
+            if ( module.getType().equals(GemModuleType.PROTOTYPE) ) {
+                // If module is prototype, all its dependencies are 
+                // required because it will be initialized afresh
+                // every time.
                 Class[] moduleDepcies = module.getConstructor().getParameterTypes();
                 for (Class moduleDepcy : moduleDepcies) {
                     actualized.add(modulesInfo.getMetaDataOfModule(moduleDepcy));
                 }
             } else {
-                /*
-                   * If module is singleton it may not need to obtain, store 
-                   * and initialize its dependencies because singleton may 
-                   * already be initialized and stored in container.
-                   */
+                // If module is singleton it may not need to obtain, store 
+                // and initialize its dependencies because singleton may 
+                // already be initialized and stored in container.                
                 if ( ! modulesInfo.getSingletons().containsKey(module.getModuleInterface())) {
-                    /*
-                        * If module is singleton and it has not been initialized yet
-                        * is only case when it is needed to obtain and store its
-                        * dependencies.
-                        */
+                    // If module is singleton and it has not been initialized yet
+                    // is only case when it is needed to obtain and store its
+                    // dependencies.
                     Class[] moduleDepcies = module.getConstructor().getParameterTypes();
                     for (Class moduleDepcy : moduleDepcies) {
                         actualized.add(modulesInfo.getMetaDataOfModule(moduleDepcy));
@@ -136,7 +129,7 @@ class PriorityLoopInjector implements Injector {
             }
         }
         Collections.sort(actualized);
-        moduleDependData = actualized;
+        declaredDepciesDatas = actualized;
     }
     
     /**
@@ -149,10 +142,10 @@ class PriorityLoopInjector implements Injector {
      * All modules (including the asked one) will be placed in this temporary storage.
      */
     private void collectModuleDependenciesFor(Class searchedModule) {
-        for ( ModuleMetaData metaData : moduleDependData ){
+        for ( ModuleMetaData metaData : declaredDepciesDatas ){
             
-            Module module = null;
-            if ( metaData.getType().equals(ModuleType.SINGLETON) ){
+            GemModule module = null;
+            if ( metaData.getType().equals(GemModuleType.SINGLETON) ){
                 module = findOrInitSingleton(metaData);
             } else {
                 module = initNewModule(metaData);     
@@ -172,18 +165,18 @@ class PriorityLoopInjector implements Injector {
             }
             
             if ( found && isNeeded ) {
-                if (moduleDependencies.containsKey(metaData.getModuleInterface())) {
-                    moduleDependencies.get(metaData.getModuleInterface()).add(module);
+                if (assembledDepcyMods.containsKey(metaData.getModuleInterface())) {
+                    assembledDepcyMods.get(metaData.getModuleInterface()).add(module);
                 } else {
-                    Deque<Module> modules = new ArrayDeque<>();
+                    Deque<GemModule> modules = new ArrayDeque<>();
                     modules.add(module);
-                    moduleDependencies.put(metaData.getModuleInterface(), modules);
+                    assembledDepcyMods.put(metaData.getModuleInterface(), modules);
                 }
             }
         }
     }   
     
-    private Module findOrInitSingleton(ModuleMetaData metaData) {        
+    private GemModule findOrInitSingleton(ModuleMetaData metaData) {        
         if ( modulesInfo.getSingletons().containsKey(metaData.getModuleInterface()) ) {
             return modulesInfo.getSingletons().get(metaData.getModuleInterface());
         } else {
@@ -191,7 +184,7 @@ class PriorityLoopInjector implements Injector {
         }       
     }
     
-    private Module initNewModule(ModuleMetaData metaData) {
+    private GemModule initNewModule(ModuleMetaData metaData) {
         if ( metaData.getConstructor().getParameterCount() == 0 ) {
             return constructModuleWithoutDepend(metaData);
         } else {
@@ -199,24 +192,24 @@ class PriorityLoopInjector implements Injector {
         }
     }      
     
-    private Module constructModuleWithoutDepend(ModuleMetaData metaData) {
+    private GemModule constructModuleWithoutDepend(ModuleMetaData metaData) {
         Object obj = instantiateBuildObject(metaData);
         return getModuleFromBuildObject(obj);
     }
     
     /**
-     * Given object can be either Module instance or ModuleBuilder instance. Method
-     * resolves it and return appropriate Module object.
+     * Given object can be either GemModule instance or GemModuleBuilder instance. Method
+ resolves it and return appropriate GemModule object.
      * 
-     * @param obj   Object that can be either Module instance or ModuleBuilder instance
-     * @return      Module obtained or casted from specified object
+     * @param obj   Object that can be either GemModule instance or GemModuleBuilder instance
+     * @return      GemModule obtained or casted from specified object
      */
-    private Module getModuleFromBuildObject(Object obj){
+    private GemModule getModuleFromBuildObject(Object obj){
         if ( ifObjectIsModuleBuilder(obj) ) {
-            ModuleBuilder builder = (ModuleBuilder) obj;
-            return (Module) builder.buildModule();
+            GemModuleBuilder builder = (GemModuleBuilder) obj;
+            return (GemModule) builder.buildModule();
         } else {
-            return (Module) obj;
+            return (GemModule) obj;
         }
     }
     
@@ -225,11 +218,11 @@ class PriorityLoopInjector implements Injector {
      * to obtain all necessary dependencies.
      * 
      * @param metaData  represents module that should be constructed
-     * @return          Module object that is fully initialized
+     * @return          GemModule object that is fully initialized
      */    
-    private Module constructModuleWithDepend(ModuleMetaData metaData) {
+    private GemModule constructModuleWithDepend(ModuleMetaData metaData) {
         Class[] moduleDep = metaData.getConstructor().getParameterTypes();
-        Module[] depModules = new Module[moduleDep.length];
+        GemModule[] depModules = new GemModule[moduleDep.length];
         
         for ( int i = 0; i < moduleDep.length; i++ ) {
             Class dependency = moduleDep[i];
@@ -245,8 +238,8 @@ class PriorityLoopInjector implements Injector {
                             metaData.getModuleInterface().getCanonicalName() + " Module.");
                 }
             } else {
-                if ( moduleDependencies.containsKey(dependency) ) {
-                    depModules[i] = moduleDependencies.get(dependency).remove();
+                if ( assembledDepcyMods.containsKey(dependency) ) {
+                    depModules[i] = assembledDepcyMods.get(dependency).remove();
                 } else {
                     throw new ModuleNotFoundException(
                             "Dependency injection algorithm is broken: Module " +
@@ -264,17 +257,17 @@ class PriorityLoopInjector implements Injector {
     
     /**
      * Instantiates new object using appropriate module constructor. This 
-     * object can contain module itself or ModuleBuilder object. Method also 
-     * hides try-catch block to wrap different reflection exceptions that can arise
-     * while object creation with ModuleInstantiationException. 
+ object can contain module itself or GemModuleBuilder object. Method also 
+ hides try-catch block to wrap different reflection exceptions that can arise
+ while object creation with ModuleInstantiationException. 
      * 
      * @param metaData      represents module that will be instantiated
-     * @param depModules    Module[] array represents previously collected dependencies 
-     *                      of this module. If module doesn't have any dependencies array
-     *                      should have zero length.
-     * @return              Module object. It may be ModuleBuilder object.
+     * @param depModules    GemModule[] array represents previously collected dependencies 
+                      of this module. If module doesn't have any dependencies array
+                      should have zero length.
+     * @return              GemModule object. It may be GemModuleBuilder object.
      */
-    private Object instantiateBuildObject(ModuleMetaData metaData, Module... depModules){
+    private Object instantiateBuildObject(ModuleMetaData metaData, GemModule... depModules){
         try {
             if ( depModules.length == 0 ){
                 return metaData.getConstructor().newInstance();
@@ -305,6 +298,6 @@ class PriorityLoopInjector implements Injector {
     }     
     
     private boolean ifObjectIsModuleBuilder(Object obj){
-        return ModuleBuilder.class.isAssignableFrom(obj.getClass());
+        return GemModuleBuilder.class.isAssignableFrom(obj.getClass());
     }
 }

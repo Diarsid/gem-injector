@@ -20,7 +20,7 @@ package com.drs.gem.injector.exceptions;
 
 /**
  * If there is no Container with specified name in 
- * {@link com.drs.gem.injector.core.Gem}
+ * {@link com.drs.gem.injector.core.GemInjector}
  * this exception is thrown.
  * 
  * @author Diarsid

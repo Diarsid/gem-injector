@@ -35,7 +35,7 @@ package com.drs.gem.injector.core;
  * 
  * @author Diarsid
  */
-public enum ModuleType {
+public enum GemModuleType {
     SINGLETON,
     PROTOTYPE
 }

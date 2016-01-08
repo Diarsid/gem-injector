@@ -7,7 +7,7 @@
 package example.modules.workers.fifth;
 
 import com.drs.gem.injector.module.InjectedConstructor;
-import com.drs.gem.injector.module.ModuleBuilder;
+import com.drs.gem.injector.module.GemModuleBuilder;
 
 import example.modules.FifthModule;
 import example.modules.FourthModule;
@@ -18,7 +18,7 @@ import example.modules.SixthModule;
  *
  * @author Diarsid
  */
-class FifthModuleImplBuilder implements ModuleBuilder<FifthModule>{
+class FifthModuleImplBuilder implements GemModuleBuilder<FifthModule>{
     
     private SecondModule second;
     private SixthModule sixth;

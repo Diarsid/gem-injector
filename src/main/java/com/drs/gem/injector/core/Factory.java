@@ -21,16 +21,16 @@ package com.drs.gem.injector.core;
 import java.lang.reflect.Constructor;
 
 /**
- * Simple factory which for instantiation of new objects required in other classes.
+ * Simple factory for instantiation new objects required in other classes.
  * 
  * @author  Diarsid
  * @see     com.drs.gem.injector.core.ModuleMetaData
  * @see     com.drs.gem.injector.core.InjectionPriorityCalculator
  * @see     com.drs.gem.injector.core.RecursiveInjector
  */
-class GemInjectorFactory {
+class Factory {
 
-    GemInjectorFactory() {
+    Factory() {
     }
     
     /**
@@ -66,12 +66,12 @@ class GemInjectorFactory {
      * @param type              module type.
      * @return                  ModuleMetaData instance.
      * @see                     com.drs.gem.injector.core.ModuleMetaData
-     * @see                     com.drs.gem.injector.core.ModuleType
+     * @see                     com.drs.gem.injector.core.GemModuleType
      */
     ModuleMetaData buildMetaData(
             Class moduleInterface,
             Constructor cons, 
-            ModuleType type){
+            GemModuleType type){
         
         return new ModuleMetaData(moduleInterface, cons, type);
     }

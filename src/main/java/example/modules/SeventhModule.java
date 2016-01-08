@@ -17,12 +17,12 @@
  */
 package example.modules;
 
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  *
  * @author Diarsid
  */
-public interface SeventhModule extends Module {
+public interface SeventhModule extends GemModule {
     
 }

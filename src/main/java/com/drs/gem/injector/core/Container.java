@@ -18,7 +18,7 @@
 
 package com.drs.gem.injector.core;
 
-import com.drs.gem.injector.module.Module;
+import com.drs.gem.injector.module.GemModule;
 
 /**
  * Interface represents Dependency Injection container. 
@@ -36,12 +36,12 @@ public interface Container {
      * @param moduleInterface   canonical name of declared module interface.
      * @param moduleImplem      canonical name of declared module implementation class.
      * @param type              module's type, SINGLETON or PROTOTYPE.
-     * @see                     com.drs.gem.injector.core.ModuleType
+     * @see                     com.drs.gem.injector.core.GemModuleType
      */
-    void declareModule(String moduleInterface, String moduleImplem, ModuleType type);
+    void declareModule(String moduleInterface, String moduleImplem, GemModuleType type);
     
     /**
-     * Start point of container work. Container Collects all information 
+     * Start point of container's work. Container collects all information 
      * about modules and initialize all singleton modules that have been 
      * declared via this container instance. 
      */
@@ -62,7 +62,7 @@ public interface Container {
      * @param <M>           actual module interface.
      * @param moduleClass   class object of actual module interface.
      * @return              fully initialized module.
-     * @see                 com.drs.gem.injector.module.Module
+     * @see                 com.drs.gem.injector.module.GemModule
      */
-    <M extends Module> M getModule(Class<M> moduleClass);
+    <M extends GemModule> M getModule(Class<M> moduleClass);
 }

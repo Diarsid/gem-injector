@@ -23,8 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.drs.gem.injector.exceptions.ModuleInstantiationException;
 import com.drs.gem.injector.exceptions.ModuleNotFoundException;
-import com.drs.gem.injector.module.Module;
-import com.drs.gem.injector.module.ModuleBuilder;
+import com.drs.gem.injector.module.GemModule;
+import com.drs.gem.injector.module.GemModuleBuilder;
 
 /**
  * RecursiveInjector implements {@link com.drs.gem.injector.core.Injector
@@ -33,8 +33,8 @@ import com.drs.gem.injector.module.ModuleBuilder;
  * 
  * This implementation uses recursive method invocations to collect and instantiate 
  * module object. It initially calls {@link RecursiveInjector#newModule(
- * java.lang.reflect.Constructor, java.lang.Class)} method for asked Module and then
- * calls {@link RecursiveInjector#findDependencies(java.lang.Class, java.lang.Class[]) }
+ * java.lang.reflect.Constructor, java.lang.Class)} method for asked GemModule and then
+ calls {@link RecursiveInjector#findDependencies(java.lang.Class, java.lang.Class[]) }
  * method to find direct dependencies of this module. If any dependency is not a 
  * singleton module or is a singleton and not placed in container`s singleton storage yet, 
  * {@link RecursiveInjector#newModule(java.lang.reflect.Constructor, java.lang.Class)} 
@@ -62,7 +62,7 @@ class RecursiveInjector implements Injector {
      * @return                  module object
      */    
     @Override
-    public Module newModule(Constructor buildCons, Class moduleInterface){        
+    public GemModule newModule(Constructor buildCons, Class moduleInterface){        
         Class[] dependencies = buildCons.getParameterTypes();
         try {
             
@@ -70,15 +70,15 @@ class RecursiveInjector implements Injector {
             if (dependencies.length == 0){
                 obj = buildCons.newInstance();
             } else {
-                Module[] depModules = findDependencies(moduleInterface, dependencies);
+                GemModule[] depModules = findDependencies(moduleInterface, dependencies);
                 obj = buildCons.newInstance(depModules);
             }
             
             if (ifObjectIsModuleBuilder(obj)){
-                ModuleBuilder builder = (ModuleBuilder) obj;
+                GemModuleBuilder builder = (GemModuleBuilder) obj;
                 return builder.buildModule();
             } else {
-                return (Module) obj;
+                return (GemModule) obj;
             }
             
         } catch (IllegalAccessException e){
@@ -119,14 +119,14 @@ class RecursiveInjector implements Injector {
      * @param   dependencies    classes represent set of module's dependencies
      * @return                  module objects which are dependencies for this module
      */    
-    private Module[] findDependencies(Class moduleInterf, Class[] dependencies){
-        Module[] foundModules = new Module[dependencies.length];        
+    private GemModule[] findDependencies(Class moduleInterf, Class[] dependencies){
+        GemModule[] foundModules = new GemModule[dependencies.length];        
         for (int i = 0; i < foundModules.length; i++){
             
             Class dependencyModule = dependencies[i];
             
             if (modulesInfo.isModuleSingleton(dependencyModule)){
-                Module module = modulesInfo.getSingletons().get(dependencyModule);
+                GemModule module = modulesInfo.getSingletons().get(dependencyModule);
                 if (module == null){
                     throw new ModuleNotFoundException(
                             "Dependency injection algorithm is broken in " + 
@@ -137,7 +137,7 @@ class RecursiveInjector implements Injector {
                 foundModules[i] = module;
             } else {
                 Constructor buildCons = modulesInfo.getConstructorOfModule(dependencyModule);
-                Module module = newModule(buildCons, dependencyModule);
+                GemModule module = newModule(buildCons, dependencyModule);
                 foundModules[i] = module;
             }            
         }
@@ -145,6 +145,6 @@ class RecursiveInjector implements Injector {
     }
     
     private boolean ifObjectIsModuleBuilder(Object obj){
-        return ModuleBuilder.class.isAssignableFrom(obj.getClass());
+        return GemModuleBuilder.class.isAssignableFrom(obj.getClass());
     }
 }
