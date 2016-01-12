@@ -18,6 +18,18 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * <p>This exception can be thrown if module declaration mechanism has been
+ * violated.</p>
+ * 
+ * <p>For more details about module declaration see {@link 
+ * com.drs.gem.injector.core.Container Container}, {@link 
+ * com.drs.gem.injector.core.Declaration Declaration} and 
+ * {@link com.drs.gem.injector.core.GemModuleDeclaration GemModuleDeclaration}.
+ * </p>
+ * 
+ * @author Diarsid
+ */
 public class ForbiddenModuleDeclarationException extends RuntimeException {
 
     public ForbiddenModuleDeclarationException(String message) {

@@ -19,21 +19,21 @@
 package com.drs.gem.injector.core;
 
 /**
- * Possible module types. 
+ * <p>Enum describes possible module types.</p>
  * 
- * Singleton means that there can be only one instance of this module
- * in {@link com.drs.gem.injector.core.Container Container}.
- * In case of singleton {@link 
- * com.drs.gem.injector.core.Container#getModule(java.lang.Class)
+ * <p>Singleton module type means that there can be only one 
+ * instance of this module in {@link Container}. <br>
+ * In case of singleton {@link Container#getModule(java.lang.Class)
  * Container.getModule()} will always return the same object of 
- * specified module interface.
+ * specified module interface.</p>
  * 
- * Prototype means that every invocation of {@link 
- * com.drs.gem.injector.core.Container#getModule(java.lang.Class)
+ * <p>Prototype module type means that every invocation of {@link 
+ * Container#getModule(java.lang.Class)
  * Container.getModule()} will always create new object of specified 
- * module interface.
+ * module interface.</p>
  * 
  * @author Diarsid
+ * @see com.drs.gem.injector.module.GemModule
  */
 public enum GemModuleType {
     SINGLETON,

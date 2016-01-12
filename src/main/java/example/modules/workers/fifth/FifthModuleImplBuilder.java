@@ -24,7 +24,6 @@ class FifthModuleImplBuilder implements GemModuleBuilder<FifthModule>{
     private SixthModule sixth;
     private FourthModule fourth;
 
-    @InjectedConstructor
     FifthModuleImplBuilder(SecondModule second, SixthModule sixth, FourthModule fourth) {
         this.second = second;
         this.sixth = sixth;

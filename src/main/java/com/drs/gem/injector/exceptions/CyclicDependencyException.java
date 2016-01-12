@@ -18,6 +18,11 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * This exception is thrown when cyclic module dependencies are detected.
+ * 
+ * @author Diarsid
+ */
 public class CyclicDependencyException extends RuntimeException {
 
     public CyclicDependencyException(String message) {

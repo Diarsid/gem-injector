@@ -3,7 +3,6 @@
 Overall document style
 */
 
-@import url('resources/fonts/dejavu.css');
 
 body {
     background-color: #f8ffe7;
@@ -240,9 +239,13 @@ div.details ul.blockList ul.blockList ul.blockList li.blockList h4, div.details 
     border:1px solid #c5edb5;
     margin:0 0 6px -8px;
     padding:7px 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 ul.blockList ul.blockList ul.blockList li.blockList h3 {
-    background-color:#d8eecb;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #d8eecb;
     border:1px solid #c5edb5;
     margin:0 0 6px -8px;
     padding:7px 5px;
@@ -334,11 +337,13 @@ ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockLi
     padding:0px 20px 5px 10px;
     border:2px solid #d8eecb;
     background-color:#F1F8E0;
+    border-radius: 20px;
 }
 ul.blockList ul.blockList ul.blockList li.blockList, ul.blockList ul.blockList ul.blockListLast li.blockList {
     padding:0 0 5px 8px;
     background-color: #ffffea;
     border:none;
+    border-radius: 10px;
 }
 ul.blockList ul.blockList ul.blockList ul.blockList li.blockList {
     margin-left:0;
@@ -360,9 +365,11 @@ Table styles
 */
 .overviewSummary, .memberSummary, .typeSummary, .useSummary, .constantsSummary, .deprecatedSummary {
     width:100%;
+    margin-bottom: 15px;
     border-left:2px solid #d8eecb;
     border-right:2px solid #d8eecb;
     border-bottom:2px solid #d8eecb;
+    border-top-right-radius: 10px;
 }
 .overviewSummary, .memberSummary  {
     padding:0px;
@@ -404,8 +411,8 @@ Table styles
     background-color:#04DC7C;
     border: none;
     height:16px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 .memberSummary caption span.activeTableTab span {
     white-space:nowrap;
@@ -417,8 +424,8 @@ Table styles
     float:left;
     background-color:#04DC7C;
     height:16px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 .memberSummary caption span.tableTab span {
     white-space:nowrap;
@@ -430,8 +437,8 @@ Table styles
     float:left;
     background-color:#04B45F;
     height:16px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 .memberSummary caption span.tableTab, .memberSummary caption span.activeTableTab {
     padding-top:0px;
@@ -478,10 +485,16 @@ td.colOne, td.colFirst, td.colLast, .useSummary td, .constantsSummary td{
     padding-top:8px;
     padding-bottom:3px;
 }
-th.colFirst, th.colLast, th.colOne, .constantsSummary th {
-    background:#d8eecb;
+th.colFirst, th.colOne, .constantsSummary th {
+    background: #d8eecb;
     text-align:left;
     padding:8px 3px 3px 7px;
+}
+th.colLast, .constantsSummary th {
+    background: #d8eecb;
+    text-align:left;
+    padding:8px 3px 3px 7px;
+    border-top-right-radius: 5px;
 }
 td.colFirst, th.colFirst {
     white-space:nowrap;

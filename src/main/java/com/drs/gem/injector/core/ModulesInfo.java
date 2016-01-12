@@ -25,50 +25,50 @@ import java.util.Map;
 import com.drs.gem.injector.module.GemModule;
 
 /**
- * Interface that hides {@link com.drs.gem.injector.core.ModulesContainer 
- * ModulesContainer} object to provide only getter-like methods that grants
+ * Interface that hides {@link ModulesContainer} object to provide 
+ * only getter-like methods that grants
  * access to information about modules, their types and constructors.
  * 
  * @author Diarsid
- * @see com.drs.gem.injector.core.ModulesContainer
+ * @see ModulesContainer.
  */
 interface ModulesInfo {
        
     /**
-     * Returns true if module of specified interface is singleton and false 
+     * Returns true if specified module is singleton and false 
      * if it is prototype.
      * 
      * @param moduleInterface   class object of declared module interface
      * @return                  true if module type is singleton, false if
-     *                          type is prototype
-     * @see                     com.drs.gem.injector.core.ModulesContainer
+     *                          type is prototype.
+     * @see                     ModulesContainer.
      */
     boolean isModuleSingleton(Class moduleInterface);
     
     /**
      * Returns Map that contains entries where key is module  
- interface class object with GemModule Type SINGLETON and value is 
- corresponding module instance which is fully initialized and ready 
- to work.
+     * interface class object with GemModule Type SINGLETON and value is 
+     * corresponding fully initialized and ready 
+     * to work module instance.
      * 
-     * @return  all initialized singletons declared in this container
-     * @see     com.drs.gem.injector.core.ModulesContainer
+     * @return  all initialized singletons declared in this container.
+     * @see     ModulesContainer.
      */
     Map<Class, GemModule> getSingletons();
     
     /**
      * Returns constructor that will be used to instantiate new objects
-     * of specified module or {@link com.drs.gem.injector.module.ModuleBuilder 
-     * ModuleBuilder} of specified module.
+     * of specified module or {@link com.drs.gem.injector.module.GemModuleBuilder 
+     * GemModuleBuilder} that will be used to create specified module.
      * 
      * @param moduleInterface   class object of declared module interface
      * @return                  appropriate module constructor
-     * @see                     com.drs.gem.injector.core.ModulesContainer
+     * @see                     ModulesContainer
      */
     Constructor getConstructorOfModule(Class moduleInterface);
     
     /**
-     * Checks if appropriate constructor assigned to specified module exists.
+     * Checks if appropriate constructor, assigned to specified module, exists.
      * 
      * @param moduleInterface   class object of declared module interface
      * @return                  true if there is constructor in this container 
@@ -77,7 +77,21 @@ interface ModulesInfo {
      */
     boolean ifConstructorExists(Class moduleInterface);
     
+    /**
+     * Returns list of ModuleMetaData sorted in ascending order by their
+     * priority.
+     * 
+     * @param moduleInterface   module interface.
+     * @return                  list of ModuleMetaData sorted in ascending 
+     *                          order by their priority.
+     */
     List<ModuleMetaData> getModuleDependenciesData(Class moduleInterface);
     
+    /**
+     * Returns ModuleMetaData of appropriate module.
+     * 
+     * @param moduleInterface   module interface.
+     * @return                  appropriate ModuleMetaData of specified module.
+     */
     ModuleMetaData getMetaDataOfModule(Class moduleInterface);
 }

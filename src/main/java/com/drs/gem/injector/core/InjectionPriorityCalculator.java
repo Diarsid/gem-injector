@@ -31,9 +31,9 @@ import com.drs.gem.injector.exceptions.UndeclaredDependencyException;
  * See detailed description in {@link ModuleMetaData}.
  * 
  * @author  Diarsid
- * @see     com.drs.gem.injector.core.ModuleMetaData
+ * @see     ModuleMetaData
  */
-class InjectionPriorityCalculator {
+final class InjectionPriorityCalculator {
     
     private final ModulesInfo info;
 
@@ -42,14 +42,13 @@ class InjectionPriorityCalculator {
     }
     
     /**
-     * Calculates injection priority. It value is actually the quantity of 
-     * modules dependencies.
-     * See detailed description in 
-     * {@link com.drs.gem.injector.core.ModuleMetaData ModuleMetaData}.
+     * Calculates injection priority. This value is actually the quantity of 
+     * modules dependencies calculated in-depth of all dependencies graph.
+     * See detailed description in {@link ModuleMetaData}.
      * 
      * @param metaData    ModuleMetaData which actual priority should be calculated
      * @return      quantity of module dependencies, i.e. its injection priority
-     * @see         com.drs.gem.injector.core.ModuleMetaData
+     * @see         ModuleMetaData
      */    
     void calculateAndSetPriority(ModuleMetaData metaData){
         if (metaData.getConstructor().getParameterCount() != 0){
@@ -61,21 +60,24 @@ class InjectionPriorityCalculator {
     }
     
     /**
-     * Takes module's Constructor from ModuleMetaData objects and 
- obtains all its parameters which are modules. Then takes constructor 
-     * of each those modules and obtains their parameters too, calculates 
-     * them and so on, until all zero-dependencies modules will be reached.
+     * <p>
+     * Takes module constructor from ModuleMetaData objects and 
+     * obtains all its parameters that are modules. Then method takes constructor 
+     * from each of those modules and obtains their parameters too, calculates 
+     * them and so on, until all modules having constructors without parameters
+     * will be reached.<br>
      * Sum of all those dependencies will determine real dependencies quantity
-     * of this concrete module.
+     * of this concrete module.</p>
      * 
-     * In fact, this method will walk through the dependencies graph begins 
-     * from this module and will calculate all nodes (dependencies in graph)
-     * that it can reach from this module until it will find all nodes that 
-     * don't have any dependencies. 
+     * <p>In fact, this method walks through the dependencies graph. It begins 
+     * walking through from specified module taking it as entry node of graph
+     * and calculates all nodes in the graph (dependencies of every constructor)
+     * which it can reach until it will find all reachable nodes that 
+     * do not have dependencies.</p>
      * 
-     * @param metaData    ModuleMetaData contains description of module which
-              real dependencies quantity should be calculated
-     * @return      quantity of module dependencies
+     * @param metaData  {@link ModuleMetaData} containing description of module 
+                        which real dependencies quantity should be calculated.
+     * @return          quantity of module dependencies.
      */
     private int calculateFullDependenciesQty(ModuleMetaData metaData){
         List<Class> dependencies = new ArrayList<>(
@@ -83,14 +85,18 @@ class InjectionPriorityCalculator {
         
         for (int i = 0; i < dependencies.size(); i++) {
             Class dependency = dependencies.get(i);
-            checkIfDependencyDeclaredAsModule(dependency);
+            checkIfDependencyDeclaredAsModule(
+                    metaData.getConstructor().getDeclaringClass(),
+                    dependency);
             checkIfModuleHasCyclicDependencies(
                     metaData.getModuleInterface(),
                     dependency, dependency);
             Constructor dependencyConstructor = 
                         info.getConstructorOfModule(dependency);
             for (Class nestedDependency : dependencyConstructor.getParameterTypes()) {
-                checkIfDependencyDeclaredAsModule(nestedDependency);
+                checkIfDependencyDeclaredAsModule(
+                        dependencyConstructor.getDeclaringClass(),
+                        nestedDependency);
                 checkIfModuleHasCyclicDependencies(
                         metaData.getModuleInterface(), 
                         nestedDependency, 
@@ -116,11 +122,14 @@ class InjectionPriorityCalculator {
         }
     }
     
-    private void checkIfDependencyDeclaredAsModule(Class dependencyClass){
+    private void checkIfDependencyDeclaredAsModule(
+            Class buildClass, Class dependencyClass){
         if ( ! info.ifConstructorExists(dependencyClass)){
             throw new UndeclaredDependencyException(
-                    "Modules dependency injection broken: " +
-                    dependencyClass.getCanonicalName() +
+                    "Modules dependency injection is broken: " +
+                    "dependency " + dependencyClass.getCanonicalName() +
+                    " declared in injected constructor in class "
+                    + buildClass.getCanonicalName() +
                     " does not declared as module.");
         }
     }

@@ -18,10 +18,10 @@ import example.modules.SixthModule;
 class SixthModuleImpl implements SixthModule {
     
     private final FourthModule fourth;
-
-    public SixthModuleImpl() {
+    
+    SixthModuleImpl() {
         this.fourth = null;
-    }    
+    }
     
     @InjectedConstructor
     SixthModuleImpl(FourthModule fourth) {

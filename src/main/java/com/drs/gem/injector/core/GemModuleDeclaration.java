@@ -21,10 +21,10 @@ package com.drs.gem.injector.core;
 import java.util.Objects;
 
 /**
- * Object of ModuleDeclaraion class represents declaration of one module.
- * It is used in {@link com.drs.gem.injector.core.Declaration Declaration} 
- * to convey necessary information about new module into {@link 
- * com.drs.gem.injector.core.Container Container}.
+ * <p>Object of ModuleDeclaraion class represents declaration of one module.
+ * </p>
+ * <p> Objects of this type are used in {@link Declaration} 
+ * to convey necessary information about new module into {@link Container}.</p>
  * 
  * <pre>
  * {@code 
@@ -46,11 +46,19 @@ public final class GemModuleDeclaration {
     private final GemModuleType moduleType;
 
     /**
-     * ModuleDeclaration constructor.
+     * <p>ModuleDeclaration constructor.</p>
+     * <p>Accepts {@link String} parameter representing the canonical 
+     * name of module interface, {@link String} parameter representing 
+     * the canonical name of module interface implementation class and 
+     * {@link GemModuleType} enum value representing type of this 
+     * module - prototype or singleton.</p>
      * 
-     * @param moduleName        canonical name of module interface
-     * @param moduleBuildClass  canonical name of module interface implementation class
-     * @param type              module type
+     * @param moduleName        canonical name of module interface.
+     * @param moduleBuildClass  canonical name of module interface 
+     *                          implementation class.
+     * @param type              module type.
+     * @see com.drs.gem.injector.module.GemModule
+     * @see GemModuleType
      */
     public GemModuleDeclaration(String moduleName, String moduleBuildClass, GemModuleType type) {
         this.moduleInterfaceName = moduleName;

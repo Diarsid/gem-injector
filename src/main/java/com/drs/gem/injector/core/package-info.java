@@ -1,5 +1,5 @@
 /**
- * Package contains core DI Container classes that provide
+ * Package contains core Dependency Injection Container classes providing
  * main container functionality.
  */
 

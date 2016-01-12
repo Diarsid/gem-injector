@@ -19,26 +19,78 @@
 package com.drs.gem.injector.module;
 
 /**
- * Interface represents advanced mechanism of module implementation class
- * object instantiation. It provides the ability to perform some preliminary 
- actions or computations that precede the direct module object instantiation.
- 
- Because of this container is based on constructor injection principle all 
- dependencies that are required for further module initialization and preliminary 
- actions execution must be declared as this GemModuleBuilder constructor arguments.
- 
- In order to perform some actions between reception of injected dependencies
- and immediate module object instantiation, implement these actions in {@link 
- * #buildModule() .buildModule()} method body. After it, {@link 
- * #buildModule() .buildModule()} method should return fully initialized and ready
- to work module object. 
- 
- This GemModuleBuilder implementation class must have only one constructor with all 
- explicitly declared module dependencies. Container finds GemModuleBuilder constructor, 
- resolves its dependencies (if they have been declared as modules in this 
- constructor), creates GemModuleBuilder instance and calls .buildModule() method. 
- Container ignores any other GemModuleBuilder implementation class methods, that's why
- all preliminary actions must be performed directly in .buildModule() method body.
+ * <p>This interface represents advanced mechanism of module object instantiation. 
+ * It provides the facility to perform some preliminary 
+ * actions or computations preceding the direct module object instantiation.
+ * </p>
+ *
+ * <p>GemModuleBuilder introduces one abstract method {@link 
+ * #buildModule() .buildModule()} that must be implemented in concrete
+ * module builder class. This method must contain all preliminary actions 
+ * that should be performed before or after module object can be returned 
+ * for further usage.</p>
+ * 
+ * <p>It is not necessary to use module builder anyway, it just an
+ * opportunity to incorporate different actions in the module object
+ * creation process and grant it with more flexible behavior. </p>
+ * 
+ * <p>Because of this container is based on constructor injection principle all 
+ * dependencies required for {@link #buildModule() .buildModule()} method 
+ * execution must be declared as this module builder constructor
+ * arguments.</p>
+ * 
+ * <p>In order to container can detect module builder class it must satisfy 
+ * two requirements:</p>
+ * <ul>
+ * <li>it must be placed in the same package where module implementation class
+ * itself is located;</li>
+ * <li>it must have the same name as module implementation class name
+ * but ends with "Builder" word. For example, if module class has name 
+ * "MyModuleImpl" then module builder must have name "MyModuleImplBuilder".</li>
+ * </ul>
+ * 
+ * <p>Just like module implementation classes, module builder implementation 
+ * classes can have more than one constructor. And, just as 
+ * module implementation classes, if module builder implementation class
+ * has more than one constructor then one of them must be annotated with
+ * {@link InjectedConstructor @InjectedConstructor}. If there is only one
+ * constructor in class, it is not need to annotate it with this
+ * annotation.</p>
+ * 
+ * Let's depict some example of module builder.
+ * 
+ * <pre> <code>
+ * // This is the builder that should be used to assemble SomeModule object. 
+ * class SomeModuleBuilder implements GemModuleBuilder&#60;SomeModule&#62; {
+ *   
+ *   private FirstModule first;
+ *   private SecondModule second;
+ *   
+ *   // this constructor will not be used by container.
+ *   SomeModuleBuilder(FirstModule firstModule, String someString, int someData) {
+ *       this.first = firstModule;
+ *   }
+ *   
+ *   // and this one, marked with appropriate annotation, will be used by 
+ *   // container. FirstModule and SecondModule will be detected as module
+ *   // builder dependencies and injected by container.
+ *   &#64;InjectedConstructor
+ *   SomeModuleBuilder(FirstModule first, SecondModule second) {
+ *       this.first = first; 
+ *       this.second = second;
+ *   }
+ *   
+ *   // method to assemble required module.
+ *   // Container will invoker this method during module initialization.
+ *   &#64;Override 
+ *   public SomeModule buildModule(){
+ *       ... any preliminary actions can go here ...
+ *       SomeModule mod = new SomeModule(... all required dependencies... );
+ *       ... any actions with module object ...
+ *       return mod;
+ *   }
+ * }
+ * </code> </pre>
  * 
  * @author Diarsid
  */

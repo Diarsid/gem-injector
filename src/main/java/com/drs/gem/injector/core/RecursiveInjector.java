@@ -27,21 +27,14 @@ import com.drs.gem.injector.module.GemModule;
 import com.drs.gem.injector.module.GemModuleBuilder;
 
 /**
- * RecursiveInjector implements {@link com.drs.gem.injector.core.Injector
- * Injector} interface and is responsible for procedure of module object 
- * creation using Constructor of every module and search of its dependencies.
+ * <p>RecursiveInjector implements {@link Injector} interface and is responsible 
+ * for procedure of module object creation and its dependencies searching.</p>
  * 
- * This implementation uses recursive method invocations to collect and instantiate 
- * module object. It initially calls {@link RecursiveInjector#newModule(
- * java.lang.reflect.Constructor, java.lang.Class)} method for asked GemModule and then
- calls {@link RecursiveInjector#findDependencies(java.lang.Class, java.lang.Class[]) }
- * method to find direct dependencies of this module. If any dependency is not a 
- * singleton module or is a singleton and not placed in container`s singleton storage yet, 
- * {@link RecursiveInjector#newModule(java.lang.reflect.Constructor, java.lang.Class)} 
- * will be called again to instantiate it. And if it has its own dependencies method
- * {@link RecursiveInjector#findDependencies(java.lang.Class, java.lang.Class[]) } will 
- * be called again, and so on. NewModule() and findDependencies() methods will be called
- * recursively until all modules is found. 
+ * This implementation uses recursive method invocations to collect module
+ * dependencies and instantiate module object. It initially calls {@link #newModule(
+ * Constructor, Class) .newModule()} method for asked GemModule and then
+ * calls {@link #findDependencies(Class, Class[]) .findDependencies()}
+ * method for searching direct dependencies of this module.
  * 
  * @author Diarsid
  */
@@ -54,7 +47,10 @@ class RecursiveInjector implements Injector {
     }
     
     /**
-     * Creates new module object and finds all required dependencies for it.
+     * Accepts info required for new module creation.
+     * If module has zero dependencies, it will be instantiated and returned.
+     * If not, method will launch the process of dependencies searching. When
+     * all required dependencies are found, module is being constructed.
      * 
      * @param   buildCons       appropriate module Constructor. It can be 
      *                          also constructor of module builder.
@@ -104,20 +100,13 @@ class RecursiveInjector implements Injector {
     }
     
     /**
-     * Finds all modules which are represented by corresponding Class objects.
-     * If class object is a class object of singleton module, then corresponding
-     * module object will be retrieved from singletons storage.
-     * If class object is a class object of prototype module, then new module 
-     * will be created via {@link 
-     * #newModule(java.lang.reflect.Constructor, java.lang.Class) .newModule()} method.
+     * Tries to find modules of classes given as dependencies. If 
+     * they are singletons, tries to find them in container's singletons 
+     * storage. If not, recursively launches the process of new module creation.
      * 
-     * These action will be performed recursively until all required dependencies 
-     * will be collected from storage (for singletons) or created afresh (for
-     * prototypes).
-     * 
-     * @param   moduleInterf    module whose dependencies will be found in method
-     * @param   dependencies    classes represent set of module's dependencies
-     * @return                  module objects which are dependencies for this module
+     * @param   moduleInterf    module whose dependencies will be found in method.
+     * @param   dependencies    classes represent set of module's dependencies.
+     * @return                  module objects which are dependencies for this module.
      */    
     private GemModule[] findDependencies(Class moduleInterf, Class[] dependencies){
         GemModule[] foundModules = new GemModule[dependencies.length];        

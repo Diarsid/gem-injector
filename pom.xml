@@ -57,7 +57,7 @@
                 <version>2.10.3</version>
                 <configuration>              
                     <excludePackageNames>example*</excludePackageNames>   
-                    <reportOutputDirectory>./site</reportOutputDirectory>
+                    <reportOutputDirectory>./site/gem-injector</reportOutputDirectory>
                     <destDir>api</destDir> 
                     <stylesheetfile>src/javadoc_custom/css/gem-injector-stylesheet.css</stylesheetfile>     
                 </configuration>

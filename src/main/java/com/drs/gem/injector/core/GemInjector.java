@@ -42,19 +42,15 @@ public final class GemInjector {
     /**
      * <p>
      * Returns a new {@link Container} instance. In order to begin using it, 
-     * it is necessary to declare modules that will be used in this 
+     * it is necessary to declare modules which will be used in this 
      * container.</p>
-     * <p>
-     * Modules in container instance can be declared in three ways.
      * 
-     * It is implied that modules will
-     * be explicitly declared later in container via 
-     * {@link Container#declareModule(String, String, GemModuleType) .declareModule()}.
+     * <p>Read more about module declarations in {@link Container}.</p>
      * 
-     * @param name  name of this new Container.
-     * @return      new Container instance.
+     * @param name  name of this new {@link Container}.
+     * @return      new {@link Container} instance.
      */
-    public final static Container buildContainer(String name) {
+    public static Container buildContainer(String name) {
         if (containers.containsKey(name)) {
             throw new ContainerInitializationException(
                     "Container with name '" + 
@@ -67,19 +63,20 @@ public final class GemInjector {
     }
     
     /**
-     * Returns a new Container instance. Accepts array of 
+     * <p>Returns a new {@link Container} instance. Accepts array of 
      * {@link Declaration Declarations} as info about declared modules.
-     * If Container has been initialized in this way, it is not permitted
+     * If {@link Container} has been initialized in this way, it is not permitted
      * to use {@link Container#declareModule(String, String, GemModuleType) .declareModule()} 
-     * method because modules information has been already given by 
-     * these Declarations.
+     * method.</p>
      * 
-     * @param name          name of this new Container.
-     * @param declarations  array of module declarations.
-     * @return              new Container instance.
+     * <p>Read more about module declarations in {@link Container}.</p>
+     * 
+     * @param name          name of this new {@link Container}.
+     * @param declarations  array of module {@link Declaration declarations}.
+     * @return              new {@link Container} instance.
      * @see                 Declaration
      */
-    public final static Container buildContainer(String name, Declaration... declarations) {
+    public static Container buildContainer(String name, Declaration... declarations) {
         if (containers.containsKey(name)) {
             throw new ContainerInitializationException(
                     "Container with name '" + 
@@ -92,13 +89,15 @@ public final class GemInjector {
     }
     
     /**
-     * Returns {@link Container} specified by its name. If name is incorrect or Container 
-     * with such name does not exists, {@link NoSuchContainerException} will be thrown.
+     * Returns previous created {@link Container} specified by its name. 
+     * If name is incorrect or Container 
+     * with this name does not exists, {@link NoSuchContainerException} 
+     * will be thrown.
      * 
      * @param name  name of required module. 
      * @return      required Container instance, if it exists.
      */
-    public final static Container getContainer(String name) {
+    public static Container getContainer(String name) {
         Container container = containers.get(name);
         if ( container == null ) {
             throw new NoSuchContainerException(
@@ -111,27 +110,28 @@ public final class GemInjector {
     /**
      * Removes specified {@link Container} instance.
      * 
-     * @param name  name of container to be removed.
-     * @return      true if container with this name was removed, false otherwise.
+     * @param name  name of {@link Container container} that should be removed.
+     * @return      true if {@link Container container} with this name 
+     *              was removed, false otherwise.
      */
-    public final static boolean removeContainer(String name) {
+    public static boolean removeContainer(String name) {
         return (containers.remove(name) != null);
     }
     
     /**
-     * Deletes all existed {@link Container Containers}.
+     * Deletes all existed {@link Container containers}.
      */
-    public final static void clear() {
+    public static void clear() {
         containers.clear();
     }
     
     /**
      * Returns {@link Set} including names of all existed 
-     * {@link Container Containers}.
+     * {@link Container containers}.
      * 
-     * @return  names of all existed {@link Container Containers}.
+     * @return  names of all existed {@link Container containers}.
      */
-    public final static Set<String> getAllContainerNames() {
+    public static Set<String> getAllContainerNames() {
         return containers.keySet();
     }
 }

@@ -35,17 +35,17 @@ import com.drs.gem.injector.module.GemModule;
 import com.drs.gem.injector.module.GemModuleBuilder;
 
 /**
- * PriorityLoopInjector implements {@link com.drs.gem.injector.core.Injector
- * Injector} interface and is responsible for procedure of module object 
- * creation using Constructor of every module and search of its dependencies.
+ * <p>PriorityLoopInjector implements {@link Injector} interface and is 
+ * responsible for procedure of module object creation and its 
+ * dependencies searching.</p>
  * 
- * This implementation uses loop with if-else branching and temporary 
+ * <p>This implementation uses loop with if-else branching and temporary 
  * dependencies storage collections to initialize the module and find 
- * all its dependencies. 
+ * all its dependencies. </p>
  * 
  * @author Diarsid
  */
-class PriorityLoopInjector implements Injector {
+final class PriorityLoopInjector implements Injector {
     
     private final ModulesInfo modulesInfo;
     private final Map<Class, Queue<GemModule>> assembledDepcyMods;
@@ -63,12 +63,12 @@ class PriorityLoopInjector implements Injector {
     }
     
     /**
-     * Creates new module object and finds all required dependencies for it.
+     * Creates new module object and searches all required dependencies for it.
      * 
      * @param   buildCons       appropriate module Constructor. It can be 
      *                          also constructor of module builder.
-     * @param   moduleInterface class object of module interface
-     * @return                  module object
+     * @param   moduleInterface class object of module interface.
+     * @return                  module object.
      */
     @Override
     public GemModule newModule(Constructor buildCons, Class moduleInterface) {        
@@ -83,13 +83,21 @@ class PriorityLoopInjector implements Injector {
         } else {
             clearInjector();
             throw new ModuleNotFoundException(
-                    "Dependency injection algorithm broken in " + 
+                    "Dependency injection algorithm is broken in " + 
                     moduleInterface.getCanonicalName() +
                     ": unable to find corresponding module after dependecy " +
                     "searching process.");
         }        
     } 
     
+    /**
+     * Checks if module actual dependencies have already been collected earlier.
+     * If they have been collected, obtains them and proceeds. If not, invokes 
+     * other method being responsible for collecting
+     * them and stores them in module's ModuleMetaData corresponding object.
+     * 
+     * @param moduleInterface.
+     */
     private void getActualDependenciesOf(Class moduleInterface) {
         if (modulesInfo.getMetaDataOfModule(moduleInterface).getDependencies() != null) {
             declaredDepciesDatas = modulesInfo.getMetaDataOfModule(moduleInterface).getDependencies();            
@@ -100,6 +108,11 @@ class PriorityLoopInjector implements Injector {
         } 
     }
     
+    /**
+     * Takes list of ModuleMetaData sorted by their priority and sweeps out 
+     * those objects which also have lower priority of main required module 
+     * but are not its real dependencies. 
+     */
     private void dependenciesPriorityReverseCheck() {
         List<ModuleMetaData> actualized = new ArrayList<>();
         actualized.add(declaredDepciesDatas.get(declaredDepciesDatas.size()-1));
@@ -133,13 +146,15 @@ class PriorityLoopInjector implements Injector {
     }
     
     /**
-     * Pivotal method which is responsible to module initialization.
-     * Walks through the collection of ModuleMetaData objects which has been sorted 
-     * by their natural ordering. Processes every ModuleMetaData object to initialize 
+     * <p>Pivotal method being responsible for module initialization.
+     * Walks through the collection of ModuleMetaData objects sorted 
+     * by their priority. <br>
+     * Processes every ModuleMetaData object to initialize 
      * module which this ModuleMetaData represents and places new module object into
-     * temporary storage.
+     * temporary storage.</p>
      * 
-     * All modules (including the asked one) will be placed in this temporary storage.
+     * <p>All modules (including the main required one) created during 
+     * this method execution will be placed in this temporary storage.</p>
      */
     private void collectModuleDependenciesFor(Class searchedModule) {
         for ( ModuleMetaData metaData : declaredDepciesDatas ){
@@ -154,12 +169,12 @@ class PriorityLoopInjector implements Injector {
             boolean found = (module != null);
             // if module is singleton it is not required to store
             // it in temporary dependencies storage because it is 
-            // alreday stored in container singletons storage and 
+            // already stored in container singletons storage and 
             // is accessible from there. 
             boolean isNeeded
                     = !modulesInfo.isModuleSingleton(metaData.getModuleInterface());
             // But if this module is the main module searched now by 
-            // this injector, it must be stored.
+            // this injector, it must be stored even it is singleton.
             if (metaData.getModuleInterface().equals(searchedModule)) {
                 isNeeded = true;
             }
@@ -199,10 +214,11 @@ class PriorityLoopInjector implements Injector {
     
     /**
      * Given object can be either GemModule instance or GemModuleBuilder instance. Method
- resolves it and return appropriate GemModule object.
+     * detects it and return appropriate GemModule object.
      * 
-     * @param obj   Object that can be either GemModule instance or GemModuleBuilder instance
-     * @return      GemModule obtained or casted from specified object
+     * @param obj   Object that can be either GemModule instance or 
+     *              GemModuleBuilder instance.
+     * @return      GemModule obtained or casted from specified object.
      */
     private GemModule getModuleFromBuildObject(Object obj){
         if ( ifObjectIsModuleBuilder(obj) ) {
@@ -234,7 +250,7 @@ class PriorityLoopInjector implements Injector {
                             "Dependency injection algorithm is broken: Module " +
                             dependency.getCanonicalName() + 
                             " not found in singleton container's storage during" +
-                            " dependency collection for " + 
+                            " collecting dependencies for " + 
                             metaData.getModuleInterface().getCanonicalName() + " Module.");
                 }
             } else {
@@ -245,7 +261,7 @@ class PriorityLoopInjector implements Injector {
                             "Dependency injection algorithm is broken: Module " +
                             dependency.getCanonicalName() + 
                             " not found in temporary modules storage during" +
-                            " dependency collection for " + 
+                            " collecting dependencies for " + 
                             metaData.getModuleInterface().getCanonicalName() + " Module.");
                 }   
             }            
@@ -256,15 +272,14 @@ class PriorityLoopInjector implements Injector {
     }
     
     /**
-     * Instantiates new object using appropriate module constructor. This 
- object can contain module itself or GemModuleBuilder object. Method also 
- hides try-catch block to wrap different reflection exceptions that can arise
- while object creation with ModuleInstantiationException. 
+     * Instantiates new object.<br>
+     * It can be either the object of the module interface or the object 
+     * of the module builder interface.
      * 
-     * @param metaData      represents module that will be instantiated
-     * @param depModules    GemModule[] array represents previously collected dependencies 
-                      of this module. If module doesn't have any dependencies array
-                      should have zero length.
+     * @param metaData      represents module that will be instantiated.
+     * @param depModules    GemModule[] array representing previously collected 
+     *                      dependencies of this module. If module doesn't 
+     *                      have any dependencies array has zero length.
      * @return              GemModule object. It may be GemModuleBuilder object.
      */
     private Object instantiateBuildObject(ModuleMetaData metaData, GemModule... depModules){

@@ -28,7 +28,7 @@ import java.lang.reflect.Constructor;
  * @see     com.drs.gem.injector.core.InjectionPriorityCalculator
  * @see     com.drs.gem.injector.core.RecursiveInjector
  */
-class Factory {
+final class Factory {
 
     Factory() {
     }

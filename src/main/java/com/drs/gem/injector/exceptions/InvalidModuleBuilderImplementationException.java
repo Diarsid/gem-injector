@@ -18,6 +18,17 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * <p>This exception can be thrown if class specified as module builder 
+ * does not implement {@link com.drs.gem.injector.module.GemModuleBuilder
+ * GemModuleBuilder} interface or does not satisfy constructor requirements.</p>
+ * 
+ * <p>See {@link com.drs.gem.injector.module.GemModuleBuilder
+ * GemModuleBuilder} for more details about constructor requirements for 
+ * module builder object.</p>
+ * 
+ * @author Diarsid
+ */
 public class InvalidModuleBuilderImplementationException extends RuntimeException {
 
     public InvalidModuleBuilderImplementationException(String message) {

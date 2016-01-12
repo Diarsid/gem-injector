@@ -18,6 +18,14 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * This exception is thrown if {@link
+ * com.drs.gem.injector.core.Container#getModule(Class)  Container.getModule()}
+ * method had been invoked before container was initialized by invocation of 
+ * {@link com.drs.gem.injector.core.Container#init() Container.init()} method.
+ * 
+ * @author Diarsid
+ */
 public class ContainerInitializationException extends RuntimeException {
 
     public ContainerInitializationException(String message) {

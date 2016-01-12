@@ -32,7 +32,7 @@ import com.drs.gem.injector.module.GemModuleBuilder;
  * 
  * @author Diarsid
  */
-class ContainerHelper {
+final class ContainerHelper {
 
     ContainerHelper() {
     }
@@ -59,9 +59,10 @@ class ContainerHelper {
     
     /**
      * Checks if given class actually implements {link@ 
- com.drs.gem.injector.module.GemModuleBuilder GemModuleBuilder} interface.
+     * com.drs.gem.injector.module.GemModuleBuilder GemModuleBuilder} interface.
      * 
-     * @param builderClass  class that must be checked if it implements GemModuleBuilder interface.
+     * @param builderClass  class that must be checked if it implements 
+     *                      GemModuleBuilder interface.
      * @see                 com.drs.gem.injector.module.ModuleBuilder.
      */
     void verifyModuleBuilder(Class builderClass){
@@ -78,8 +79,8 @@ class ContainerHelper {
      * Verifies that given class is interface and it extends 
      * {@link com.drs.gem.injector.module.GemModule GemModule} interface.
      * @param moduleInterface   class that should be verified if it is interface and extends 
-                          GemModule interface.
-     * @see                     com.drs.gem.injector.module.Module.
+     *                          GemModule interface.
+     * @see                     com.drs.gem.injector.module.GemModule.
      */
     void verifyModuleInterface(Class moduleInterface){
         if ( ! moduleInterface.isInterface()){
@@ -131,15 +132,23 @@ class ContainerHelper {
     }
     
     /**
-     * Finds correct constructor among all constructors in the class. Constructor that
-     * will be used for dependency injection must be marked with {@link 
-     * InjectedConstructor} annotation. GemModule or GemModuleBuilder class should have
- only one constructor with this annotation otherwise an exception will be thrown.
+     * <p>Searches correct constructor among all constructors in the class. If there
+     * are more than one constructor in the class, one of them which will be 
+     * used for dependency injection must be marked with {@link 
+     * InjectedConstructor} annotation.</p>
      * 
-     * @param constructors  constructors array that should be checked if it has only one object.
+     * <p>GemModule or GemModuleBuilder class should have only one constructor 
+     * with this annotation otherwise an exception will be thrown.</p>
+     * 
+     * @param constructors  constructors array that should be explored.
      * @return              constructor of processed module.
      */
     Constructor resolveModuleConstructors(Constructor... constructors){
+        if ( constructors.length == 1 ) {
+            return constructors[0];
+        }
+        // else proceed. If there are more than one constructor proper one 
+        // must be annotated.
         Constructor required = null;
         int annotatedConstrQty = 0;
         for (Constructor constr : constructors) {

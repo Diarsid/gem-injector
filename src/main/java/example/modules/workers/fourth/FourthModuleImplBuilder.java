@@ -27,7 +27,7 @@ class FourthModuleImplBuilder implements GemModuleBuilder<FourthModule>{
     }
 
     @InjectedConstructor
-    public FourthModuleImplBuilder(FirstModule first, ThirdModule third) {
+    FourthModuleImplBuilder(FirstModule first, ThirdModule third) {
         this.third = third;
         this.first = first;        
         System.out.println("[ 4 MODULE-BUILDER] - constructed.");

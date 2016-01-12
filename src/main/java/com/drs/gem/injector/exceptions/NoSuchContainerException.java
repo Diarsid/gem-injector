@@ -19,11 +19,15 @@
 package com.drs.gem.injector.exceptions;
 
 /**
- * If there is no Container with specified name in 
- * {@link com.drs.gem.injector.core.GemInjector}
+ * If there is no {@link com.drs.gem.injector.core.Container Container} with 
+ * specified 
+ * name when {@link com.drs.gem.injector.core.GemInjector#getContainer(String) 
+ * GemInjector.getContainer()} method is invoked  
  * this exception is thrown.
  * 
  * @author Diarsid
+ * @see com.drs.gem.injector.core.Container
+ * @see com.drs.gem.injector.core.GemInjector
  */
 public class NoSuchContainerException extends RuntimeException {
     

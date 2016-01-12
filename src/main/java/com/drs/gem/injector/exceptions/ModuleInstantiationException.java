@@ -18,6 +18,13 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * This exception is thrown if occurs some problem during object instantiation
+ * while {@link java.lang.reflect.Constructor#newInstance(Object...) 
+ * Constructor.newInstance()} execution.
+ * 
+ * @author Diarsid
+ */
 public class ModuleInstantiationException extends RuntimeException {
 
     public ModuleInstantiationException(String message, Throwable cause) {

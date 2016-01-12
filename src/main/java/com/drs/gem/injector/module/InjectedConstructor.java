@@ -23,14 +23,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for marking module constructor whose parameters will be treated as
+ * <p>Annotation for marking module constructor whose parameters will be treated as
  * set of module dependencies. This constructor will be used by Container to
  * inject collected dependencies and initialize module.
  * Container will resolve only those dependencies that have been declared in
- * constructor marked with this annotation.
+ * constructor marked with this annotation.</p>
  * 
- * It is not permitted to mark more than one constructor in module class with
- * this annotation.
+ * <p>It is not permitted to mark more than one constructor in module class with
+ * this annotation.</p>
  * 
  * @author Diarsid
  */

@@ -25,30 +25,29 @@ import java.util.Objects;
 import com.drs.gem.injector.exceptions.DependencyCalculationException;
 
 /**
- * Class which represents module, provides data about it and contains
- * priority of each module when it has to be initialized.
+ * <p>Class representing module, provides data about it and contains
+ * priority of each module when it is to be initialized.</p>
  * 
- * It implements Comparable therefore its objects could be placed in 
- * PriorityQueue in order to get their natural ordering.
- * 
- * ModuleMetaData is compared by int field priority. Its value 
- * means how much real dependencies module that is described by this
- * priority has. Not only direct dependencies (constructor arguments)
+ * <p>It implements Comparable therefore collections of its objects could be 
+ * sorted. 
+ * Their natural ordering is determined by object's int priority field. Its value 
+ * means how much real dependencies has module described by this
+ * ModuleMetaData. Not only direct dependencies (constructor arguments)
  * are counted, but also dependencies of underlying modules, i.e. all
- * quantity of modules in dependencies graph that lead to this module.
+ * quantity of modules in dependencies graph that lead to this module.</p>
  * 
- * Information about dependencies quantity of every module is required 
+ * <p>Information about every module dependencies quantity is required 
  * in order to compose sequential module initialization order when all
- * modules without dependencies would be initialized firstly, modules 
- * with one dependency secondarily and so on. This approach ensure that
- * for every module when it time comes to initialize it all required 
+ * modules without dependencies will be initialized firstly, modules 
+ * with one dependency secondarily and so on. This approach ensures that
+ * when it comes time for every module to be initialized, all required 
  * dependencies will be already initialized and injection will be 
- * performed properly.
+ * performed properly.</p>
  * 
  * @author  Diarsid
- * @see     com.drs.gem.injector.core.InjectionPriorityCalculator#calculatePriority(com.drs.gem.injector.core.InjectionPriority) 
+ * @see     InjectionPriorityCalculator 
  */
-class ModuleMetaData implements Comparable<ModuleMetaData>{
+final class ModuleMetaData implements Comparable<ModuleMetaData>{
     
     private final Class moduleInterface;
     private final Constructor moduleConstructor;
@@ -78,13 +77,11 @@ class ModuleMetaData implements Comparable<ModuleMetaData>{
     /**
      * This priority has initial value of -1 means that its actual 
      * dependencies quantity has not been calculated yet. 
-     * {@link com.drs.gem.injector.core.InjectionPriorityCalculator 
-     * InjectionPriorityCalculator} is responsible for dependencies 
+     * {@link InjectionPriorityCalculator} is responsible for dependencies 
      * quantity calculation.
      * 
-     * @param   priority
-     * @see     com.drs.gem.injector.core.InjectionPriorityCalculator#calculatePriority(
-     *          com.drs.gem.injector.core.ModuleMetaData)
+     * @param   priority.
+     * @see     InjectionPriorityCalculator.
      */
     void setPriority(int priority){
         this.priority = priority;
@@ -101,9 +98,11 @@ class ModuleMetaData implements Comparable<ModuleMetaData>{
     private void checkIfDependenciesIsCalculated(){
         if ( priority < 0 ){
             throw new DependencyCalculationException(
-                    "Exception in InjectionPriority(" +
+                    "Exception in ModuleMetaData(" +
                     moduleConstructor.getClass().getCanonicalName() +
-                    "): injection priority was not calculated."
+                    "): injection priority of this object was not calculated "
+                            + "before collection with ModuleMetaData "
+                            + "objects ordering."
             );
         }
     }

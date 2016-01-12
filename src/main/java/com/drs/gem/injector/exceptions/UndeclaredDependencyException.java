@@ -18,6 +18,15 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * This exception is thrown if some {@link
+ * com.drs.gem.injector.module.GemModule module} or {@link
+ * com.drs.gem.injector.module.GemModuleBuilder module builder} has dependency
+ * in its constructor that is not actually a module and does not implement 
+ * {@link com.drs.gem.injector.module.GemModule GemModule} interface.
+ * 
+ * @author Diarsid
+ */
 public class UndeclaredDependencyException extends RuntimeException {
 
     public UndeclaredDependencyException(String message) {

@@ -18,6 +18,15 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * <p>This exception is thrown if some error occurs in container dependencies 
+ * collecting algorithm.</p>
+ * 
+ * <p>In normal case, this exception would not be thrown.<br> If this exception
+ * occurs it means that inner container work algorithm has been broken.</p>
+ * 
+ * @author Diarsid
+ */
 public class ModuleNotFoundException extends RuntimeException {
 
     public ModuleNotFoundException(String message) {

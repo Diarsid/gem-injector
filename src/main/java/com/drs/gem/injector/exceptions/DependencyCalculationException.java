@@ -18,6 +18,17 @@
 
 package com.drs.gem.injector.exceptions;
 
+/**
+ * <p>This exception can be thrown by inner container class that contains 
+ * module dependencies and used by container. 
+ * It is thrown if module dependencies have not been 
+ * calculated before container begins the injection of dependencies.</p>
+ * 
+ * <p>In normal case, this exception would not be thrown.<br> If this exception
+ * occurs it means that inner container work algorithm has been broken.</p>
+ * 
+ * @author Diarsid
+ */
 public class DependencyCalculationException extends RuntimeException {
 
     public DependencyCalculationException(String message) {
