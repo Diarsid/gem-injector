@@ -112,7 +112,7 @@ This is the point where **ModuleBuilder** comes into play! To provide **FifthMod
 
 As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as **ModuleBuilder** implementation class constructor's arguments. They will be injected during **ModuleBuilder** object creation by container itself so it is necessary to save them somewhere to use them later in .*buildModule*() method.
 
-All we need now in order to use **FifthModule** (in conjunction with container) is to declare new modules as we have done it for previous modules earlier:
+All we need now in order to use **FifthModule** (in conjunction with container) is to declare new modules as we have done it for previous modules earlier.
 
 And that’s all! **Container** will find all **ModuleBuilder** imlemenetations of appropriate modules, init them and execute .*buildModule*() methods to get appropriate module instances.
 
