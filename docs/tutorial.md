@@ -31,43 +31,47 @@ So, how can you use this DI container? Here is a simple example how one can use 
 
 In order to illustrate container work let’s create a skeleton of a simple program that doesn’t rely on DI container yet. Assume that our program has only three modules and they are called **FirstModule**, **SecondModule** and **ThirdModule** to avoid complex names.
 
-![interfaces](http://i.imgur.com/AfueEmy.png?1)
+![first_module_interf](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/1.1_FirstModule_interf.png)
+![second_module_interf](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/1.2_SecondModule_interf.png)
+![third_module_interf](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/1.3_ThirdModule_interf.png)
 
 Let’s implement those interfaces with concrete classes and call them “workers”. **FirstModuleWorker**, **SecondModuleWorker** and so on. Note that every module implementation is located in its own separate package and has package-private class access.
 
-![first_module](http://i.imgur.com/6vgD1qR.png)
+![first_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/2.1_FirstModule_worker.png)
 
-![second_module](http://i.imgur.com/JxeTbqf.png)
+![second_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/2.2_SecondModule_worker.png)
 
-![third_module](http://i.imgur.com/Kee5PYI.png)
+![third_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/2.3_ThirdModule_worker.png)
 
 ##### Dependency graph and constructor injection [:arrow_up_small:](#gem-injector-tutorial)
 It’s done. Of course, these modules cannot be completely independent because if they actually are, they can be useless. Whole program is designed to deal with some tasks and all its inner parts have to work in conjunction to achieve some common goals. Modules will have inner dependencies on themselves to use one another as a services. Let’s depict the scheme of their dependencies as a graph:
 
-![dependencies_graph](http://i.imgur.com/6yrV9A2.png)
+![dependencies_graph](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/Modules_3_graph_scheme.png)
 
 It’s clear from scheme above that **FirstModule** is independent and doesn’t require any other module to do its work. But more complex **SecondModule** and **ThirdModule** need other modules in order to execute their tasks. Let’s add constructors into worker classes that will accept other modules as dependencies accordingly to that scheme:
 
-![first_class](http://i.imgur.com/H6dRhGy.png)
+![first_class](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/3.1_FirstModule_worker_constructor.png)
 
-![second_class](http://i.imgur.com/OekqMSh.png)
+![second_class](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/3.2_SecondModule_worker_constructor.png)
 
-![third_class](http://i.imgur.com/I0gcTrz.png)
+![third_class](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/3.3_ThirdModule_worker_constructor.png)
 
 From that point it is possible to begin the assembling of the program and wiring modules together. Without DI container it is necessary to write a lot of code with the “new” operator, explicitly passing module instances into other constructors of appropriate worker classes and casting their instances to appropriate module interfaces. This approach leads to inconvenient cumbersome code which often requires a lot of static methods and breaking of package-private classes encapsulation.
 
 ##### Module and Container usage [:arrow_up_small:](#gem-injector-tutorial)
-To avoid that we will use DI container. To begin with it, it is required to edit our previous code to extend module interfaces from void **com.drs.gem.injector.module.Module** interface:
+To avoid that we will use DI container. In order to begin with it, it is required to edit our previous code to extend module interfaces from void **com.drs.gem.injector.module.Module** interface:
 
-![interfaces_extend_module](http://i.imgur.com/q5ujW8P.png)
+![first_module_interf_extend_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/4.1_FirstModule_interf_GemModule.png)
+![first_module_interf_extend_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/4.2_SecondModule_interf_GemModule.png)
+![first_module_interf_extend_module](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/4.3_ThirdModule_interf_GemModule.png)
 
 Then just obtain instance of **com.drs.gem.injector.core.Container**, declare appropriate modules, invoke .*init*() method and that’s all! After it instance of any declared module can be obtained by invocation of **Container**.*getModule*(**Class** moduleClass) method.
 
-![module_declarations](http://i.imgur.com/yw7zLpG.png)
+![module_declarations](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/5.1_Container_module_declarations.png)
 
 Returned module instance is fully initialized and has all required dependecies set. 
 
-When modules are declared and method .*init*() is invoked on **Container** instance, container collects all information about dependencies graph, initializes them all, injects all required dependencies where they are required and saves all singleton module instances. 
+When modules have been declared and method .*init*() invoked on **Container** instance, container collects all information about dependencies graph, initializes them all, injects all required dependencies where they are required and saves all singleton module instances. 
 
 #### Module Builders [:arrow_up_small:](#gem-injector-tutorial)
 
@@ -75,26 +79,24 @@ Assume that there is some complex module depending on several other modules. Let
 
 Let’s extend our previous dependencies graph with **FourthModule** and **FifthModule**. This will look something like this:
 
-![second_graph](http://i.imgur.com/0Am4yiA.png)
+![second_graph](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/Modules_5_graph_scheme.png)
 
 Let’s create new module interface as has been described above:
 
-![5th_interface](http://i.imgur.com/XrNz5FT.png)
+![5th_interface](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/6.1_FifthModule_interf.png)
 
 And implement it as we need:
 
-![5th_class](http://i.imgur.com/KRj7I3m.png)
+![5th_class](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/6.2_FifthModule_worker.png)
 
 ##### ModuleBuilder interface [:arrow_up_small:](#gem-injector-tutorial)
 This is the point where **ModuleBuilder** comes into play! To provide **FifthModule** instance with all necessary additional data wee need some method and object that can perform all required actions, collect all results and initialize **FifthModuleWorker** instance. And .*buildModule*() method of **com.drs.gem.injector.module.ModuleBuilder** interface can serve as such entry point. Just create appropriate **ModuleBuilder** implementation class, provide it with an appropriate constructor, that accepts all required module dependencies, **@Override** .*buildModule*() method and place this class in the same package with **FifthModuleWorker**. It is described in code snippet below:
 
-![module_builder](http://i.imgur.com/aquMQtS.png)
+![module_builder](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/6.2_FifthModule_worker_Builder.png)
 
 As you can see, any other helper classes like **FifthModuleAssistant** and **SomeDataVerifier** or any other actions can be incorporated in initialization process as described above. Note, that all dependencies which are required to process preliminary actions are declared as **ModuleBuilder** implementation class constructor's arguments. They will be injected during **ModuleBuilder** object creation by container itself so it is necessary to save them somewhere to use them later in .*buildModule*() method.
 
 All we need now in order to use **FifthModule** (in conjunction with container) is to declare new modules as we have done it for previous modules earlier:
-
-![additional_declaration](http://i.imgur.com/SYVa4pq.png)
 
 And that’s all! **Container** will find all **ModuleBuilder** imlemenetations of appropriate modules, init them and execute .*buildModule*() methods to get appropriate module instances.
 
