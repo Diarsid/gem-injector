@@ -11,7 +11,7 @@
   * [ModuleBuilder interface](#modulebuilder-interface-arrow_up_small)
   * [Module Builder restrictions](#module-builder-restrictions-arrow_up_small)
 * [Constructor injection](#constructor-injection-arrow_up_small)
-  * [@InjectedConstructor annotation](#@injectedconstructor-annotation-arrow_up_small)
+  * [@InjectedConstructor annotation](#injectedconstructor-annotation-arrow_up_small)
 * [Container details](#container-details)
   * [Common code requirements](#common-code-requirements-arrow_up_small)
   * [Module Types](#module-types-arrow_up_small)
