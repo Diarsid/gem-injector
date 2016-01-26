@@ -10,9 +10,10 @@
 * [Module Builders](#module-builders-arrow_up_small)
   * [ModuleBuilder interface](#modulebuilder-interface-arrow_up_small)
   * [Module Builder restrictions](#module-builder-restrictions-arrow_up_small)
+* [Constructor injection](#constructor-injection-arrow_up_small)
+  * [@InjectedConstructor annotation](#@injectedconstructor-annotation-arrow_up_small)
 * [Container details](#container-details)
   * [Common code requirements](#common-code-requirements-arrow_up_small)
-  * [Constructor injection](#constructor-injection-arrow_up_small)
   * [Module Types](#module-types-arrow_up_small)
   * [Cyclic dependencies](#cyclic-dependencies-arrow_up_small)
 
@@ -136,7 +137,9 @@ It is permitted for module class to have more than one constructor. But in this 
 That's why in order to provide consistent and precise container's and module's behavior and avoid uncertainty or complex configurations annotation **@InjectedConstructor** should be used if module (or module builder) class has more than one constructor. There must be only one **@InjectedConstructor** annotation in class otherwise exception will be thrown. 
 If class has only one explicitly declared constructor there is no need to use this annotation.
 
+Let's depict some class that has two constructors and uses **@InjectedConstructor** annotation:
 
+![inj-constr-ann](https://github.com/Diarsid/gem-injector/blob/master/docs/tutorial-pictures-v2/7.1_InjectedConstructor_usage.png)
 
 #### Container details
 ##### Common code requirements [:arrow_up_small:](#gem-injector-tutorial)
